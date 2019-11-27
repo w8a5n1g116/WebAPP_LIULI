@@ -1,0 +1,45 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<List<Warehousing>> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">入库列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">产品名称</dt>
+                    <dd class="col-6">检收数量</dd>
+                    @foreach (var m1 in m)
+                    {
+                        <dt class="col-6">@m1.ProductName</dt>
+                        <dd class="col-6">@m1.InspectionCount</dd>
+                    }
+
+
+                </dl>
+                <a href="/Home/Warehousing?id=@m.First().Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">入库验收</a>
+            </div>
+
+        }
+
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

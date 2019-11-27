@@ -1,0 +1,82 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Order> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            
+            <a href="/Home/OrderInput" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">订单列表</h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="form-group form-inline">
+            <label class="col-2 col-form-label">交货日期</label>
+            <div class="col-5">
+                <input class="form-control" type="date" id="DeliveryTime" name="DeliveryTime" value="@ViewBag.time">
+                
+            </div>
+            <div class="col-5">
+                <button id="queryButton" type="button" class="btn btn-primary btn-md waves-effect waves-light"><i class="md md-add"></i>查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">顾客名称</dt>
+                    <dd class="col-6">@m.Customer.CustomerName</dd>
+                    <dt class="col-6">公司识别号</dt>
+                    <dd class="col-6">@m.Customer.CustomerCompanyNumber</dd>
+                    <dt class="col-6">顾客地址</dt>
+                    <dd class="col-6">@m.Customer.CustomerAddress</dd>
+                    <dt class="col-6">产品名称</dt>
+                    <dd class="col-6">@m.ProductName</dd>
+                    <dt class="col-6">订单数量/吨</dt>
+                    <dd class="col-6">@m.ProductCount 吨</dd>
+                    <dt class="col-6">交货日期</dt>
+                    <dd class="col-6">@m.DeliveryTime</dd>
+                    <dt class="col-6">订单状态</dt>
+                    <dd class="col-6">@m.OrderStatus</dd>
+                    <dt class="col-6">销售人员</dt>
+                    <dd class="col-6">@m.Salesman</dd>
+                    <dt class="col-6">订单日期</dt>
+                    <dd class="col-6">@m.CreateTime</dd>
+                </dl>
+                <a href="/Home/OrderInput?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">操作</a>
+                @if(m.OrderStatus == "已下单" || m.OrderStatus == "部分发货")
+                {
+                    <a href="/Home/SendOrder?id=@m.Id" class="btn btn-block btn-xs btn-success waves-effect waves-light">发货</a>
+                }
+                
+            </div>
+        }
+
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+
+            $('#queryButton').click(function () {
+                var time = $('#DeliveryTime').val();
+                window.location = '/Home/OrderList?time=' + time;
+            })
+        });
+    </script>
+
+</div>
+<!-- end row -->

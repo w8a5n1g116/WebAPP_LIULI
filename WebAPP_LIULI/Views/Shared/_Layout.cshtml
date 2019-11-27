@@ -1,0 +1,216 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>生产管理系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/Content/assets/images/favicon.ico">
+
+    <!--Morris Chart CSS -->
+    <link rel="stylesheet" href="/Content/assets/plugins/morris/morris.css">
+
+    <!-- Sweet Alert css -->
+    <link href="/Content/assets/plugins/sweet-alert/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App css -->
+    <link href="/Content/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/assets/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/assets/css/style.css" rel="stylesheet" type="text/css" />
+
+    <!-- 钉钉  -->
+    <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.7.13/dingtalk.open.js"></script>
+
+    <script src="/Content/assets/js/modernizr.min.js"></script>
+
+    <!-- jQuery  -->
+    <script src="/Content/assets/js/jquery.min.js"></script>
+    <script src="/Content/assets/js/popper.min.js"></script>
+    <script src="/Content/assets/js/bootstrap.min.js"></script>
+    <script src="/Content/assets/js/waves.js"></script>
+    <script src="/Content/assets/js/jquery.slimscroll.js"></script>
+
+
+</head>
+<body>
+
+    <!-- Navigation Bar-->
+    <header id="topnav">
+        <div class="topbar-main">
+            <div class="container-fluid">
+
+                <!-- Logo container-->
+                <div class="logo">
+                    <!-- Text Logo -->
+                    <!--<a href="index.html" class="logo">-->
+                    <!--<span class="logo-small"><i class="mdi mdi-radar"></i></span>-->
+                    <!--<span class="logo-large"><i class="mdi mdi-radar"></i> Adminto</span>-->
+                    <!--</a>-->
+                    <!-- Image Logo -->
+                    <a href="/Home/Index" class="logo">
+                        <img src="/Content/assets/images/logo-sm.png" alt="" height="26" class="logo-small">
+                        <img src="/Content/assets/images/logo.png" alt="" height="24" class="logo-large">
+                    </a>
+
+                </div>
+                <!-- End Logo container-->
+
+
+                <div class="menu-extras topbar-custom">
+
+                    <ul class="list-unstyled topbar-right-menu float-right mb-0">
+
+                        <li class="menu-item">
+                            <!-- Mobile menu toggle-->
+                            <a class="navbar-toggle nav-link">
+                                <div class="lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+                            <!-- End mobile menu toggle-->
+                        </li>
+
+                        <li class="notification-list">
+                            <span class="nav-link   waves-light nav-user text-white" id="SysUserName">@if (user != null) {@user.UserName}</span>
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- end menu-extras -->
+
+                <div class="clearfix"></div>
+
+            </div> <!-- end container -->
+        </div>
+        <!-- end topbar-main -->
+
+        <div class="navbar-custom">
+            <div class="container-fluid">
+                <div id="navigation">
+                    <!-- Navigation Menu-->
+                    <ul class="navigation-menu">
+                        <li class="has-submenu">
+                            <a href="/Home/Index"><i class="mdi mdi-view-dashboard"></i> <span> 主页 </span> </a>
+                        </li>
+                        @if (user != null)
+                        {
+                            <li class="has-submenu">
+                                <a href="/Home/SendMaterial"><i class="mdi mdi-view-dashboard"></i> <span> 原料发货 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/ReceiveMaterialList"><i class="mdi mdi-view-dashboard"></i> <span> 原料收货 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/QualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 过程质检 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/WarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 入库交检 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/WarehousingInspectionList"><i class="mdi mdi-view-dashboard"></i> <span> 入库验收 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/OrderList"><i class="mdi mdi-view-dashboard"></i> <span> 订单管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/ReceiveSendOrderList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客收货 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/TeamAllocation?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 经营分配 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/UserList"><i class="mdi mdi-view-dashboard"></i> <span> 用户管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/DriverList"><i class="mdi mdi-view-dashboard"></i> <span> 司机管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/CustomerList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/ProductList"><i class="mdi mdi-view-dashboard"></i> <span> 产品管理 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/ProductReport"><i class="mdi mdi-view-dashboard"></i> <span> 生产报表 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/SaleReport"><i class="mdi mdi-view-dashboard"></i> <span> 销售报表 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/MainReport"><i class="mdi mdi-view-dashboard"></i> <span> 总经理报表 </span> </a>
+                            </li>
+                        }
+
+
+                    </ul>
+                    <!-- End navigation menu -->
+                </div> <!-- end #navigation -->
+            </div> <!-- end container -->
+        </div> <!-- end navbar-custom -->
+    </header>
+    <!-- End Navigation Bar-->
+
+
+    <div class="wrapper">
+        <div class="container-fluid">
+            @RenderBody()
+
+
+        </div> <!-- end container -->
+
+    </div>
+    <!-- end wrapper -->
+    <!-- Footer -->
+    @*<footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    2019 - 2025 © w8a5n1g116@126.com
+                </div>
+            </div>
+        </div>
+    </footer>*@
+    <!-- End Footer -->
+    <!-- Sweet Alert Js  -->
+    <script src="/Content/assets/plugins/sweet-alert/sweetalert2.min.js"></script>
+    <script src="/Content/assets/pages/jquery.sweet-alert.init.js"></script>
+
+
+    <!-- KNOB JS -->
+    <!--[if IE]>
+    <script type="text/javascript" src="/Content/assets/plugins/jquery-knob/excanvas.js"></script>
+    <![endif]-->
+    <script src="/Content/assets/plugins/jquery-knob/jquery.knob.js"></script>
+
+    <!--Morris Chart-->
+    <script src="/Content/assets/plugins/morris/morris.min.js"></script>
+    <script src="/Content/assets/plugins/raphael/raphael-min.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="/Content/assets/pages/jquery.dashboard.js"></script>
+
+
+    <!-- App js -->
+    <script src="/Content/assets/js/jquery.core.js"></script>
+    <script src="/Content/assets/js/jquery.app.js"></script>
+
+
+</body>
+</html>

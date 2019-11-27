@@ -1,0 +1,109 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    MaterialOrder m = Model;
+    if (m == null)
+    {
+        m = new MaterialOrder();
+    }
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">原料收货</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/ReceiveMaterial" method="post">
+                <input hidden="hidden" type="text" name="Id" value="@m.Id">
+                <dl class="row">
+                    <dt class="col-6">发货数量/吨</dt>
+                    <dd class="col-6">@m.SendCount 吨</dd>
+                </dl>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">收货数量/吨</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="ReceiveCount">
+                    </div>
+                </div>
+                <dl class="row">
+                    <dt class="col-6">司机姓名</dt>
+                    <dd class="col-6">@m.MaterialDriver.Name</dd>
+                    <dt class="col-6">司机电话</dt>
+                    <dd class="col-6">@m.MaterialDriver.PhoneNumber</dd>
+                    <dt class="col-6">车牌号</dt>
+                    <dd class="col-6">@m.MaterialDriver.CarNumber</dd>
+                    <dt class="col-6">车型</dt>
+                    <dd class="col-6">@m.MaterialDriver.CarType</dd>
+                    <dt class="col-6">最大载重</dt>
+                    <dd class="col-6">@m.MaterialDriver.MaxLoad</dd>
+                    <dt class="col-6">身份证号</dt>
+                    <dd class="col-6">@m.MaterialDriver.PersonId</dd>
+                    <dt class="col-6">银行卡号</dt>
+                    <dd class="col-6">@m.MaterialDriver.BankNumer</dd>
+                    <dt class="col-6">开户行</dt>
+                    <dd class="col-6">@m.MaterialDriver.BankName</dd>
+                </dl>
+
+                <input hidden="hidden" type="text" name="ReceiveDeterminePerson" value="@if (string.IsNullOrEmpty(m.ReceiveDeterminePerson)) { @user.UserName } else { @m.ReceiveDeterminePerson; }">
+
+                <dl class="row p-t-10">
+                    <dt class="col-6">任务单号</dt>
+                    <dd class="col-6">@m.TaskId</dd>
+                    <dt class="col-6">复核人</dt>
+                    <dd class="col-6">@if (string.IsNullOrEmpty(m.ReceiveDeterminePerson)) { @user.UserName}
+                    else
+                    {@m.ReceiveDeterminePerson;
+                }</dd>
+                </dl>
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">确定收货</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定收货么？',
+                    text: "请确定好填写内容正确无误后收货！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '收货',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    swal(
+                        '收货成功！',
+                        '您已成功收货！',
+                        'success'
+                    )
+                    $('#FormBody').submit();
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次收货！',
+                            'error'
+                        )
+                    }
+                })
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

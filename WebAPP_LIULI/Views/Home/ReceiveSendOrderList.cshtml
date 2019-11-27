@@ -1,0 +1,56 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<SendOrder> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">顾客收货列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+
+        @foreach (var m in modelList)
+        {
+        <div class="card-box">
+            <dl class="row">
+                <dt class="col-6">顾客名称</dt>
+                <dd class="col-6">@m.Order.Customer.CustomerName</dd>
+                <dt class="col-6">顾客地址</dt>
+                <dd class="col-6">@m.CustomerAddress</dd>
+                <dt class="col-6">产品名称</dt>
+                <dd class="col-6">@m.Order.ProductCount</dd>
+                <dt class="col-6">送货数量/吨</dt>
+                <dd class="col-6">@m.SendCount 吨</dd>
+                <dt class="col-6">送货时间</dt>
+                <dd class="col-6">@m.SendTime.Value.ToString("yyyy-MM-dd")</dd>
+                <dt class="col-6">司机姓名</dt>
+                <dd class="col-6">@m.MaterialDriver.Name</dd>
+                <dt class="col-6">司机电话</dt>
+                <dd class="col-6">@m.MaterialDriver.PhoneNumber</dd>
+                <dt class="col-6">车牌号</dt>
+                <dd class="col-6">@m.MaterialDriver.CarNumber</dd>
+                <dt class="col-6">车型</dt>
+                <dd class="col-6">@m.MaterialDriver.CarType</dd>
+
+            </dl>
+            <a href="/Home/ReceiveSendOrder?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">顾客收货</a>
+        </div>
+
+        }
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

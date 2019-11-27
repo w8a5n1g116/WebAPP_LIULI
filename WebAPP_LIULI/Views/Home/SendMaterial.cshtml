@@ -1,0 +1,152 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    MaterialOrder m = Model;
+    if (m == null)
+    {
+        m = new MaterialOrder();
+    }
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">原料发货</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/SendMaterial" method="post">
+
+                <input hidden="hidden" type="text" name="Id" value="@m.Id">
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择司机</label>
+                    <div class="col-md-10">
+                        <select id="Driver" class="form-control" name="MaterialDriver.Id">
+                            @foreach (var c in ViewBag.drivers)
+                            {
+                                <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">发货数量/吨</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="SendCount" value="@m.SendCount">
+                    </div>
+                </div>
+                <dl class="row">
+                    <dt class="col-6">司机姓名</dt>
+                    <dd id="Name" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.Name}</dd>
+                    <dt class="col-6">司机电话</dt>
+                    <dd id="PhoneNumber" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.PhoneNumber}</dd>
+                    <dt class="col-6">车牌号</dt>
+                    <dd id="CarNumber" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.CarNumber}</dd>
+                    <dt class="col-6">车型</dt>
+                    <dd id="CarType" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.CarType}</dd>
+                    <dt class="col-6">最大载重</dt>
+                    <dd id="MaxLoad" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.MaxLoad}</dd>
+                    <dt class="col-6">身份证号</dt>
+                    <dd id="PersonId" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.PersonId}</dd>
+                    <dt class="col-6">银行卡号</dt>
+                    <dd id="BankNumer" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.BankNumer}</dd>
+                    <dt class="col-6">开户行</dt>
+                    <dd id="BankName" class="col-6">@if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.BankName}</dd>
+                </dl>
+
+                <input hidden="hidden" type="text" name="SendDeterminePerson" value="@if (string.IsNullOrEmpty(m.SendDeterminePerson)) { @user.UserName } else { @m.SendDeterminePerson; }">
+                <input hidden="hidden" type="text" name="TaskId" value="@if (string.IsNullOrEmpty(m.TaskId)) { @("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss"))  } else { @m.TaskId; }">
+
+                <dl class="row p-t-10">
+                    <dt class="col-6">任务单号</dt>
+                    <dd class="col-6">@if (string.IsNullOrEmpty(m.TaskId)) { @("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss"))  } else { @m.TaskId; }</dd>
+                    <dt class="col-6">复核人</dt>
+                    <dd class="col-6">
+                        @if (string.IsNullOrEmpty(m.SendDeterminePerson)) {@user.UserName }
+                        else
+                        {@m.SendDeterminePerson;
+                    }
+                    </dd>
+                </dl>
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    swal(
+                        '提交成功！',
+                        '您已成功提交！',
+                        'success'
+                    )
+                    $('#FormBody').submit();
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+
+            GetDriverInfo();
+
+
+            $('#Driver').change(function () {
+                GetDriverInfo() 
+            })
+
+            function GetDriverInfo() {
+                var checkValue = $("#Driver").val();
+                $.post('/Home/DriverDetailJson', { id: checkValue }, function (data) {
+                    var o = JSON.parse(data)
+                    $('#Name').html(o.Name);
+                    $('#PhoneNumber').html(o.PhoneNumber);
+                    $('#CarNumber').html(o.CarNumber);
+                    $('#CarType').html(o.CarType);
+                    $('#MaxLoad').html(o.MaxLoad);
+                    $('#PersonId').html(o.PersonId);
+                    $('#BankNumer').html(o.BankNumer);
+                    $('#BankName').html(o.BankName);
+                });
+            }
+        });
+    </script>
+
+</div>
+<!-- end row -->

@@ -1,0 +1,54 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    Product m = Model;
+    if (m == null)
+    {
+        m = new Product();
+    }
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">顾客详情</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box">
+            <form class="form-horizontal" role="form" action="/Home/ProductDetail" method="post">
+                <input hidden="hidden" type="text" name="Id" value="@m.Id">
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">产品名称</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="ProductName" value="@m.ProductName">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">单袋重量</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="OneOfWeight" value="@m.OneOfWeight">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">单袋价格</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="OneOfPrice" value="@m.OneOfPrice">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-block btn-xs btn-purple waves-effect waves-light">保存</button>
+            </form>
+        </div>
+    </div><!-- end col -->
+
+</div>
+<!-- end row -->

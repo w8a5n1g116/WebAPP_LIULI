@@ -1,0 +1,142 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h2 class="page-title">生产报表</h2>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
+                <h5>总订单数</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.Respository 吨</h2>
+                <h5>库存吨位</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-success" data-plugin="counterup">@ViewBag.MonthProductions 吨</h2>
+                <h5>本月产量</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-danger" data-plugin="counterup">@ViewBag.todayProduction 吨</h2>
+                <h5>今日产量</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">班组产量</th>
+                            <th width="35%">占比</th>
+                            <th width="35%">废品率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (TeamProduction tp in ViewBag.tpList)
+                        {
+                            <tr>
+                                <td>@tp.Team</td>
+                                <td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@tp.ProductRate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@tp.ScrapRate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="35%">产品名称</th>
+                            <th width="35%">今日产品</th>
+                            <th width="30%">占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (TodayProductRate tpr in ViewBag.tprList)
+                        {
+                            <tr>
+                                <td>@tpr.ProductName</td>
+                                <td>@tpr.ProductCount 吨</td>
+                                <td>
+                                    <p class="font-600 m-b-5"> <span class="text-primary pull-right">@tpr.ProductRate.ToString("0.00") %</span></p>
+                                    <div class="progress progress-bar-primary-alt progress-sm m-b-20">
+                                        <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@tpr.ProductRate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @tpr.ProductRate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
+                                        </div><!-- /.progress-bar .progress-bar-danger -->
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!-- end row -->
+
+<script>
+    $(document).ready(function () {
+        
+
+    });
+</script>

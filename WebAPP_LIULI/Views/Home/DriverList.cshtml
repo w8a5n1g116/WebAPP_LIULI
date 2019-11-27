@@ -1,0 +1,54 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Driver> driverList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            <a href="/Home/DriverDetail" class="btn btn-success btn-md waves-effect waves-light m-b-30" ><i class="md md-add"></i>添加</a>            
+        </div>
+        <h4 class="page-title">司机列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var driver in driverList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">司机姓名</dt>
+                    <dd class="col-6">@driver.Name</dd>
+                    <dt class="col-6">司机电话</dt>
+                    <dd class="col-6">@driver.PhoneNumber</dd>
+                    <dt class="col-6">车牌号</dt>
+                    <dd class="col-6">@driver.CarNumber</dd>
+                    <dt class="col-6">车型</dt>
+                    <dd class="col-6">@driver.CarType</dd>
+                    <dt class="col-6">最大载重</dt>
+                    <dd class="col-6">@driver.MaxLoad T</dd>
+                    <dt class="col-6">身份证号</dt>
+                    <dd class="col-6">@driver.PersonId</dd>
+                    <dt class="col-6">银行卡号</dt>
+                    <dd class="col-6">@driver.BankNumer</dd>
+                    <dt class="col-6">开户行</dt>
+                    <dd class="col-6">@driver.BankName</dd>
+                </dl>
+                <a href="/Home/DriverDetail?id=@driver.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">查看</a>
+            </div>
+        }
+
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

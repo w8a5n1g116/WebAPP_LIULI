@@ -1,0 +1,45 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Product> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            <a href="/Home/ProductDetail" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">产品列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">产品名称</dt>
+                    <dd class="col-6">@m.ProductName</dd>
+                    <dt class="col-6">单袋重量</dt>
+                    <dd class="col-6">@m.OneOfWeight</dd>
+                    <dt class="col-6">单袋价格</dt>
+                    <dd class="col-6">@m.OneOfPrice</dd>
+
+                </dl>
+                <a href="/Home/ProductDetail?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">查看</a>
+            </div>
+        }
+
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

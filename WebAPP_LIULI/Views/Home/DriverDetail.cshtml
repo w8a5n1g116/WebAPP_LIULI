@@ -1,0 +1,92 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    Driver driver = Model;
+    if (driver == null)
+    {
+        driver = new Driver();
+    }
+    
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">司机详情</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box">
+            <form class="form-horizontal" role="form" action="/Home/DriverDetail" method="post">
+                <input hidden="hidden" type="text" name="Id" value="@driver.Id">
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">司机名称</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="Name" value="@driver.Name">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">车牌号</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="CarNumber" value="@driver.CarNumber">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">电话</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="PhoneNumber" value="@driver.PhoneNumber">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">车类型</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="CarType" value="@driver.CarType">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">最大载重</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="MaxLoad" value="@driver.MaxLoad">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">身份证号</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="PersonId" value="@driver.PersonId">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">银行卡号</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="BankNumer" value="@driver.BankNumer">
+                    </div>
+                </div>
+
+
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">开户行</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="BankName" value="@driver.BankName">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-block btn-xs btn-purple waves-effect waves-light">保存</button>
+            </form>
+        </div>
+    </div><!-- end col -->
+
+</div>
+<!-- end row -->

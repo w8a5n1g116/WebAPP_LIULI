@@ -1,0 +1,49 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<User> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            <a href="/Home/UserDetail" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">用户列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">用户名称</dt>
+                    <dd class="col-6">@m.UserName</dd>
+                    <dt class="col-6">用户权限</dt>
+                    <dd class="col-6">@m.UserPermission</dd>
+                    <dt class="col-6">用户班组</dt>
+                    <dd class="col-6">@m.UserTeam</dd>
+                    <dt class="col-6">用户类型</dt>
+                    <dd class="col-6">@m.UserType</dd>
+                    <dt class="col-6">联系电话</dt>
+                    <dd class="col-6">@m.UserPhone</dd>
+
+                </dl>
+                <a href="/Home/UserDetail?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">查看</a>
+            </div>
+        }
+
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

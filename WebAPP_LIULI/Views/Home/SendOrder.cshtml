@@ -1,0 +1,165 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    SendOrder m = Model;
+    if (m == null)
+    {
+        m = new SendOrder();
+    }
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">订单发货</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/SendOrder" method="post">
+                <input hidden="hidden" type="text" name="Id" value="@m.Id">
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择司机</label>
+                    <div class="col-md-10">
+                        <select id="Driver" class="form-control" name="MaterialDriver.Id">
+                            @foreach (var c in ViewBag.drivers)
+                            {
+                                <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <dl class="row">
+                    <dt class="col-6">顾客名称</dt>
+                    <dd id="CustomerName" class="col-6">@m.Order.Customer.CustomerName</dd>
+                    <dt class="col-6">公司识别号</dt>
+                    <dd id="CustomerAddress" class="col-6">@m.Order.Customer.CustomerCompanyNumber</dd>
+                </dl>
+
+                <dl class="row">
+                    <dt class="col-6">产品名称</dt>
+                    <dd id="CustomerName" class="col-6">@m.Order.ProductName</dd>
+                    <dt class="col-6">订单数量</dt>
+                    <dd id="CustomerAddress" class="col-6">@m.Order.ProductCount</dd>
+                </dl>
+
+                <dl class="row">
+                    <dt class="col-6">发货状态</dt>
+                    <dd id="CustomerName" class="col-6">@m.TaskStatus</dd>
+                </dl>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">发货地址</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="CustomerAddress" value="@if (string.IsNullOrEmpty(m.CustomerAddress)) {@m.Order.Customer.CustomerAddress } else {@m.CustomerAddress } ">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">联系人</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="Contact" value="@if (string.IsNullOrEmpty(m.Contact)) {@m.Order.Customer.Contact } else {@m.Contact }">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">联系电话</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="text" name="ContactPhone" value="@if (string.IsNullOrEmpty(m.ContactPhone)) {@m.Order.Customer.ContactPhone } else {@m.ContactPhone } ">
+
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">发货数量/吨</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="SendCount" value="@m.SendCount">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">发货日期</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="date" name="SendTime" value="@m.SendTime">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">备注</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" name="Remarks" id="Remarks" rows="2">@m.Remarks</textarea>
+                    </div>
+                </div>
+
+                <input hidden="hidden" type="text" name="SendDeterminePerson" value="@if (string.IsNullOrEmpty(m.SendDeterminePerson)) { @user.UserName } else { @m.SendDeterminePerson; }">
+
+                <dl class="row p-t-10">
+                    <dt class="col-6">业务员</dt>
+                    <dd class="col-6">
+                        @if (string.IsNullOrEmpty(m.SendDeterminePerson)) {@user.UserName }
+                        else
+                        {@m.SendDeterminePerson;
+                    }
+                    </dd>
+                </dl>
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    swal(
+                        '提交成功！',
+                        '您已成功提交！',
+                        'success'
+                    )
+                    $('#FormBody').submit();
+
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+
+            $('#Customer').change(function () {
+                var checkValue = $("#Customer").val();
+                $.post('/Home/CustomerDetailJson', { id: checkValue }, function (data) {
+                    var o = JSON.parse(data)
+                    $('#CustomerName').html(o.CustomerName);
+                    $('#CustomerAddress').html(o.CustomerAddress);
+                    $('#Contact').html(o.Contact);
+                    $('#ContactPhone').html(o.ContactPhone);
+                });
+            })
+        });
+    </script>
+
+</div>
+<!-- end row -->

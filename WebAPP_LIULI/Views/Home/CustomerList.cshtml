@@ -1,0 +1,51 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Customer> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            <a href="/Home/CustomerDetail" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">顾客列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">顾客名称</dt>
+                    <dd class="col-6">@m.CustomerName</dd>
+                    <dt class="col-6">公司识别号</dt>
+                    <dd class="col-6">@m.CustomerCompanyNumber</dd>
+                    <dt class="col-6">顾客地址</dt>
+                    <dd class="col-6">@m.CustomerAddress</dd>
+                    <dt class="col-6">顾客电话</dt>
+                    <dd class="col-6">@m.CustomerPhone</dd>
+                    <dt class="col-6">联系人</dt>
+                    <dd class="col-6">@m.Contact</dd>
+                    <dt class="col-6">联系电话</dt>
+                    <dd class="col-6">@m.ContactPhone</dd>
+
+                </dl>
+                <a href="/Home/CustomerDetail?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">查看</a>
+            </div>
+        }
+
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

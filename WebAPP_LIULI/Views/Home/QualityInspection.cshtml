@@ -1,0 +1,160 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    QualityInspection m = Model;
+    if (m == null)
+    {
+        m = new QualityInspection();
+    }
+
+    User user = (User)Session["User"];
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">过程质检</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/QualityInspection" method="post">
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择班组</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="CheckTeam">
+                            @foreach (var c in ViewBag.teams)
+                            {
+                                <option value="@c">@c</option>
+                            }
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择工序</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="ProcessName">
+                            <option>水洗</option>
+                            <option>分筛</option>
+                            <option>发货</option>
+                            <option>客户</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type="text" hidden="hidden" name="UnqualifiedReson" id="UnqualifiedReson"/>
+
+                <div class="radio radio-info form-check-inline ml-2">
+                    <input type="radio" id="CheckGood" value="合格" name="CheckResult" checked="">
+                    <label for="inlineRadio1"> 合格 </label>
+                </div>
+
+                <div class="radio form-check-inline ml-5">
+                    <input type="radio" id="CheckBed" value="不合格" name="CheckResult">
+                    <label for="inlineRadio2"> 不合格 </label>
+                </div>
+
+                <div hidden="hidden" id="CheckBody" class="row mt-2 ml-2">
+                    <div class="col-sm-6">
+                        <div class="checkbox checkbox-info checkbox-circle">
+                            <input type="checkbox" id="radio1" name="UnqualifiedReson1" value="浊度">
+                            <label for="radio1">
+                                浊度
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-info checkbox-circle">
+                            <input type="checkbox" id="radio02" name="UnqualifiedReson1" value="数目">
+                            <label for="radio02">
+                                数目
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-info checkbox-circle">
+                            <input type="checkbox" id="radio3" name="UnqualifiedReson1" value="含其他杂质">
+                            <label for="radio3">
+                                含其他杂质
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-info checkbox-circle">
+                            <input type="checkbox" id="radio4" name="UnqualifiedReson1" value="包装破损">
+                            <label for="radio4">
+                                包装破损
+                            </label>
+                        </div>
+                    </div><!-- end col -->
+
+                </div>
+
+                <input hidden="hidden" type="text" name="CheckUserName" value="@user.UserName">
+
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light mt-2" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    swal(
+                        '提交成功！',
+                        '您已成功提交！',
+                        'success'
+                    )
+
+                    var checkValue = '';
+
+                    $.each($('input[name="UnqualifiedReson1"]:checked'), function (i, val) {
+                        checkValue += $(val).val()
+                        if ($('input[name="UnqualifiedReson1"]:checked').length - 1 != i) {
+                            checkValue += ',';
+                        }
+                            
+                    });
+
+                    $('#UnqualifiedReson').val(checkValue);
+                   
+                    $('#FormBody').submit();
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+
+            $('#CheckGood').click(function () {
+                $('#CheckBody').attr("hidden", "hidden");
+            });
+
+            $('#CheckBed').click(function () {
+                $('#CheckBody').removeAttr("hidden");
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

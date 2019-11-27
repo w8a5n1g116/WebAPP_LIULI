@@ -1,0 +1,1170 @@
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Net.Http;
+using System.Web;
+using System.Web.Mvc;
+using WebAPP_LIULI.Models;
+
+namespace WebAPP_LIULI.Controllers
+{
+    public class HomeController : Controller
+    {
+        MainModel model = new MainModel();
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+            var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            var actionName = filterContext.ActionDescriptor.ActionName;
+
+            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+
+            var user = Session["User"] as User;
+            if (controllerName != "Home" && actionName != "Index" && user == null)
+            {
+                //重定向至登录页面
+                filterContext.Result = RedirectToAction("Index");
+                return;
+            }
+
+        }
+
+        public ActionResult Index()
+        {            
+            return View();
+        }
+
+
+        public string GetUserInfo(string code)
+        {
+            HttpClient _httpClient = new HttpClient();
+
+            HttpResponseMessage ret = _httpClient.GetAsync("https://oapi.dingtalk.com/gettoken?appkey=dinginkcscgychixztbs&appsecret=_G-kUrgJu9tRMsroW-uZ8IbZatd9_LHbogOGjYMOTF73_H4FD83s0PctU7_eDQ_c").Result;
+
+            string retstring = ret.Content.ReadAsStringAsync().Result;
+            JObject o = JObject.Parse(retstring);
+
+            _httpClient = new HttpClient();
+
+            ret = _httpClient.GetAsync("https://oapi.dingtalk.com/user/getuserinfo?access_token=" + o["access_token"] + "&code=" + code).Result;
+
+            retstring = ret.Content.ReadAsStringAsync().Result;
+
+            JObject o2 = JObject.Parse(retstring);
+
+            string userId = o2["userid"].ToString();
+            string userName = o2["name"].ToString();
+
+            User user = model.User.Where(p => p.DingUserId == userId).FirstOrDefault();
+
+            if(user == null)
+            {
+                user = new User();
+                user.UserName = userName;
+                user.DingUserId = userId;
+                user.CreateTime = DateTime.Now;
+
+                model.User.Add(user);
+                model.SaveChanges();
+            }
+
+            Session["User"] = user;
+
+            return user.UserTeam;
+
+        }
+
+        public ActionResult SendMaterial()
+        {
+            List<Driver> drivers = model.MaterialDriver.ToList();
+            ViewBag.drivers = drivers;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SendMaterial(MaterialOrder m)
+        {
+
+            m.CreateTime = DateTime.Now;
+            Driver driver = model.MaterialDriver.Where(p => p.Id == m.MaterialDriver.Id).FirstOrDefault();
+            m.SendTime = DateTime.Now;
+            m.TaskStatus = "已发货";
+            m.MaterialDriver = driver;
+            model.MaterialOrder.Add(m);
+
+            model.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
+        public ActionResult ReceiveMaterialList()
+        {
+            List<MaterialOrder> mList = model.MaterialOrder.Where(p => p.TaskStatus == "已发货").ToList();
+            return View(mList);
+        }
+
+        public ActionResult ReceiveMaterial(int id)
+        {
+            MaterialOrder m = model.MaterialOrder.Where(p => p.Id == id).FirstOrDefault();
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult ReceiveMaterial(MaterialOrder m)
+        {
+            MaterialOrder _m = model.MaterialOrder.Where(p => p.Id == m.Id).FirstOrDefault();
+
+            _m.ReceiveCount = m.ReceiveCount;
+            _m.TaskStatus = "已收货";
+            _m.ReceiveDeterminePerson = m.ReceiveDeterminePerson;
+            _m.ReceiveTime = DateTime.Now;
+
+            model.SaveChanges();
+            return RedirectToAction("ReceiveMaterialList");
+        }
+
+        public ActionResult WarehousingInspectionList()
+        {
+            List<List<Warehousing>> models = new List<List<Warehousing>>();
+            List<DateTime?> times = model.Warehousing.Where(p => p.WarehousingTime == null).Select(p => p.InspectionTime).Distinct().ToList();
+            foreach (var t in times)
+            {
+                var m = model.Warehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second //&&
+                //p.InspectionTime.Value.Millisecond == t.Value.Millisecond
+                ).ToList();
+                models.Add(m);
+            }
+            return View(models);
+        }
+
+        public ActionResult WarehousingInspection()
+        {
+            List<Product> products = model.Product.ToList();
+            ViewBag.products = products;
+            return View();
+        }
+
+
+        [HttpPost]
+        public string WarehousingInspection(List<Warehousing> warehousings)
+        {
+            var CreateTime = DateTime.Now;
+            foreach (var w in warehousings)
+            {
+                w.CreateTime = CreateTime;
+                w.InspectionTime = CreateTime;
+                if (w.InspectionCount != 0)
+                    model.Warehousing.Add(w);
+            }
+            model.SaveChanges();
+            return "{\"success\":true}";
+        }
+
+        public ActionResult Warehousing(int id)
+        {
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+
+            DateTime? t = model.Warehousing.Where(p => p.Id == id).First().InspectionTime;
+
+            List<Warehousing> modesls = model.Warehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second
+                ).ToList();
+
+            return View(modesls);
+        }
+
+        [HttpPost]
+        public string Warehousing(List<Warehousing> warehousings)
+        {
+            var WarehousingTime = DateTime.Now;
+            foreach (var w in warehousings)
+            {
+                var _w = model.Warehousing.Where(p => p.Id == w.Id).First();
+                _w.WarehousingCount = w.WarehousingCount;
+                _w.WarehousingName = w.WarehousingName;
+                _w.WarehousingTeam = w.WarehousingTeam;
+                _w.WarehousingTime = WarehousingTime;
+                _w.Remarks = w.Remarks;
+            }
+
+            model.SaveChanges();
+
+            return "{\"success\":true}";
+        }
+
+        public ActionResult QualityInspection()
+        {
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult QualityInspection(QualityInspection m)
+        {
+            m.CreateTime = DateTime.Now;
+            m.ScrapCount = 1;
+            if (m.CheckResult == "合格")
+                m.UnqualifiedReson = null;
+
+            model.QualityInspection.Add(m);
+            model.SaveChanges();
+
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+
+            return View();
+        }
+
+        public ActionResult OrderList(DateTime? time)
+        {
+            List<Order> mList = new List<Order>();
+            if (time == null)
+                mList = model.Order.OrderByDescending(p => p.OrderStatus).ToList();
+            else
+                mList = model.Order.Where(p => 
+                p.DeliveryTime.Year == time.Value.Year &&
+                p.DeliveryTime.Month == time.Value.Month &&
+                p.DeliveryTime.Day == time.Value.Day 
+                ).OrderByDescending(p => p.OrderStatus).ToList();
+
+            ViewBag.time = time;
+            return View(mList);
+        }
+
+
+        public ActionResult OrderInput(int? id)
+        {
+            List<Customer> customers = model.Customer.ToList();
+            List<Product> products = model.Product.ToList();
+
+            ViewBag.customers = customers;
+            ViewBag.products = products;
+
+            Order m = model.Order.Where(p => p.Id == id).FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult OrderInput(Order m)
+        {
+            if(m.Id == 0)
+            {
+                m.CreateTime = DateTime.Now;
+                Customer customer = model.Customer.Where(p => p.Id == m.Customer.Id).FirstOrDefault();
+                m.Customer = customer;
+                model.Order.Add(m);
+            }
+            else
+            {
+                Order _m = model.Order.Where(p => p.Id == m.Id).FirstOrDefault();
+                Customer customer = model.Customer.Where(p => p.Id == m.Customer.Id).FirstOrDefault();
+                _m.Customer = customer;
+                _m.DeliveryTime = m.DeliveryTime;
+                _m.OrderStatus = m.OrderStatus;
+                _m.ProductCount = m.ProductCount;
+                _m.ProductName = m.ProductName;
+                _m.Remarks = m.Remarks;
+                _m.Salesman = m.Salesman;
+                _m.OrderStatus = m.OrderStatus;
+                _m.OrderPrice = m.OrderPrice;
+            }
+            
+            model.SaveChanges();
+            return RedirectToAction("OrderList");
+        }
+
+        public ActionResult DriverList()
+        {
+            List<Driver> driveList = model.MaterialDriver.ToList();
+            return View(driveList);
+        }
+
+        public ActionResult DriverDetail(int? id)
+        {
+            Driver driver = model.MaterialDriver.Where(p => p.Id == id).FirstOrDefault();
+            if (driver == null)
+                return View();
+            else
+                return View(driver);
+        }
+
+        public string DriverDetailJson(int? id)
+        {
+            Driver m = model.MaterialDriver.Where(p => p.Id == id).FirstOrDefault();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+            string json = JsonConvert.SerializeObject(m,settings);
+            return json;
+        }
+
+        [HttpPost]
+        public ActionResult DriverDetail(Driver m)
+        {
+            if (m.Id == 0)
+            {
+                m.CreateTime = DateTime.Now;
+                model.MaterialDriver.Add(m);
+            }
+            else
+            {
+                Driver _m = model.MaterialDriver.Where(p => p.Id == m.Id).FirstOrDefault();
+                _m.BankName = m.BankName;
+                _m.BankNumer = m.BankNumer;
+                _m.CarNumber = m.CarNumber;
+                _m.CarType = m.CarType;
+                _m.MaxLoad = m.MaxLoad;
+                _m.Name = m.Name;
+                _m.PersonId = m.PersonId;
+                _m.PhoneNumber = m.PhoneNumber;
+            }
+            
+            model.SaveChanges();
+            return RedirectToAction("DriverList");
+        }
+
+        public ActionResult CustomerList()
+        {
+            List<Customer> mList = model.Customer.ToList();
+            return View(mList);
+        }
+
+        public ActionResult CustomerDetail(int? id)
+        {
+            Customer m = model.Customer.Where(p => p.Id == id).FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        public string CustomerDetailJson(int id)
+        {
+            Customer m = model.Customer.Where(p => p.Id == id).FirstOrDefault();
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+            string json = JsonConvert.SerializeObject(m, settings);
+            return json;
+        }
+
+        [HttpPost]
+        public ActionResult CustomerDetail(Customer m)
+        {
+            if (m.Id == 0)
+            {
+                m.CreateTime = DateTime.Now;
+                model.Customer.Add(m);
+            }
+            else
+            {
+                Customer _m = model.Customer.Where(p => p.Id == m.Id).FirstOrDefault();
+                _m.CustomerName = m.CustomerName;
+                _m.CustomerCompanyNumber = m.CustomerCompanyNumber;
+                _m.CustomerAddress = m.CustomerAddress;
+                _m.CustomerPhone = m.CustomerPhone;
+                _m.Contact = m.Contact;
+                _m.ContactPhone = m.ContactPhone;
+            }
+           
+            model.SaveChanges();
+            return RedirectToAction("CustomerList");
+        }
+
+        public ActionResult UserList()
+        {
+            List<User> mList = model.User.ToList();
+            return View(mList);
+        }
+
+        public ActionResult UserDetail(int? id)
+        {
+            User m = model.User.Where(p => p.Id == id).FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult UserDetail(User m)
+        {
+            if (m.Id == 0)
+            {
+                m.CreateTime = DateTime.Now;
+                model.User.Add(m);
+            }
+            else
+            {
+                User _m = model.User.Where(p => p.Id == m.Id).FirstOrDefault();
+                _m.UserName = m.UserName;
+                _m.UserPermission = m.UserPermission;
+                _m.UserPhone = m.UserPhone;
+                _m.UserTeam = m.UserTeam;
+                _m.UserType = m.UserType;
+            }
+            
+            model.SaveChanges();
+            return RedirectToAction("UserList");
+        }
+
+        public ActionResult ProductList()
+        {
+            List<Product> mList = model.Product.ToList();
+            return View(mList);
+        }
+
+        public ActionResult ProductDetail(int? id)
+        {
+            Product m = model.Product.Where(p => p.Id == id).FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult ProductDetail(Product m)
+        {
+            if (m.Id == 0)
+            {
+                model.Product.Add(m);
+            }
+            else
+            {
+                Product _m = model.Product.Where(p => p.Id == m.Id).FirstOrDefault();
+                _m.ProductName = m.ProductName;
+                _m.OneOfWeight = m.OneOfWeight;
+                _m.OneOfPrice = m.OneOfPrice;
+            }
+            
+            model.SaveChanges();
+            return RedirectToAction("ProductList");
+        }
+
+        public ActionResult SendOrder(int? id)
+        {
+            List<Driver> drivers = model.MaterialDriver.ToList();
+            ViewBag.drivers = drivers;
+
+            SendOrder m = model.SendOrder.Where(p => p.Order.Id == id).FirstOrDefault();
+            if (m == null)
+            {
+                m = new SendOrder();
+                m.CreateTime = DateTime.Now;
+                Order o = model.Order.Where(p => p.Id == id).First();
+                m.Order = o;
+                m.TaskStatus = "待发货";
+                m.TaskId = "SendOrder_" + m.CreateTime.ToString("yyyyMMddHHmmss");
+                model.SendOrder.Add(m);
+                model.SaveChanges();
+            }
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult SendOrder(SendOrder m)
+        {
+            SendOrder _m = model.SendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
+
+            _m.TaskStatus = "已发货";
+            _m.SendCount = m.SendCount;
+            _m.SendTime = m.SendTime; ;
+            _m.SendDeterminePerson = m.SendDeterminePerson;
+            _m.CustomerAddress = m.CustomerAddress;
+            _m.Contact = m.Contact;
+            _m.ContactPhone = m.ContactPhone;
+            _m.Remarks = m.Remarks;
+            _m.Order.OrderStatus = "部分发货";
+
+            Driver driver = model.MaterialDriver.Where(p => p.Id == m.MaterialDriver.Id).First();
+            _m.MaterialDriver = driver;
+
+            model.SaveChanges();
+            return RedirectToAction("OrderList");
+        }
+
+        public ActionResult ReceiveSendOrderList()
+        {
+            List<SendOrder> mList = model.SendOrder.Where(p => p.TaskStatus == "已发货").ToList();
+            return View(mList);
+        }
+
+
+        public ActionResult ReceiveSendOrder(int id)
+        {
+            SendOrder m = model.SendOrder.Where(p => p.Id == id).FirstOrDefault();
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult ReceiveSendOrder(SendOrder m)
+        {
+            SendOrder _m = model.SendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
+
+            _m.ReceiveCount = m.ReceiveCount;
+            _m.TaskStatus = "已收货";
+            _m.ReceiveDeterminePerson = m.ReceiveDeterminePerson;
+            _m.ReceiveTime = DateTime.Now;
+
+            Order order = _m.Order;
+            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.Order.Id == order.Id).ToList();
+            double count = 0;
+            if(beforeSendOrders.Any())
+            {
+                count = beforeSendOrders.Sum(p => p.ReceiveCount);
+            }
+            count += _m.ReceiveCount;
+            if(count >= order.ProductCount)
+                _m.Order.OrderStatus = "已完成";
+            _m.Remarks = m.Remarks;
+
+            model.SaveChanges();
+            return RedirectToAction("ReceiveSendOrderList");
+        }
+
+        public ActionResult RewardPunishmentList()
+        {
+            List<RewardPunishment> mList = model.RewardPunishment.ToList();
+            return View(mList);
+        }
+
+        public ActionResult RewardPunishment(int? id)
+        {
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+
+            RewardPunishment m = model.RewardPunishment.Where(p => p.Id == id).FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult RewardPunishment(RewardPunishment m)
+        {
+            if (m.Id == 0)
+            {
+                m.CreateTime = DateTime.Now;
+                model.RewardPunishment.Add(m);
+            }
+            else
+            {
+                RewardPunishment _m = model.RewardPunishment.Where(p => p.Id == m.Id).FirstOrDefault();
+                _m.Date = m.Date;
+                _m.Type = m.Type;
+                _m.Team = m.Team;
+                _m.Count = m.Count;
+                _m.Remarks = m.Remarks;
+                _m.UserName = m.UserName;
+            }
+
+            model.SaveChanges();
+            return RedirectToAction("RewardPunishmentList");
+        }
+
+        public ActionResult TeamAllocation(string team)
+        {
+            if(string.IsNullOrEmpty(team))
+            {
+                return RedirectToAction("Index");
+            }
+
+            List<User> users = model.User.Where(p => p.UserTeam == team).ToList();          
+
+            Product product = model.Product.First();
+
+            double LastProductions = 0;
+            double QualityRate = 0;
+            double Income = 0;
+            double Punishment = 0;
+            double FixedAllocation = 0;
+            double AllocationCount = 0;
+
+            DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
+            DateTime end = start.AddMonths(1);
+
+            List<Warehousing> ws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end).ToList();
+
+            double AllLastProductions = 0;
+            if(ws.Any())
+            {
+                AllLastProductions = ws.Sum(p => p.WarehousingCount);
+            }
+
+            List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
+
+            double Scrap = 0;
+            if(qs.Any())
+            {
+                Scrap = qs.Sum(p => p.ScrapCount);
+            }
+
+            LastProductions = (AllLastProductions - Scrap) * product.OneOfWeight;
+
+            QualityRate = (LastProductions / AllLastProductions) * 100;
+
+            
+
+
+            string dateString = DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+            List<RewardPunishment> rps = model.RewardPunishment.Where(p => p.Date == dateString).ToList();
+            if(rps.Any())
+            {
+                Punishment = rps.Sum(p => p.Count);
+            }
+
+            Income =  LastProductions * product.OneOfPrice + Punishment;
+
+
+            FixedAllocation = Income * 0.6;
+
+            AllocationCount = Income * 0.35;
+
+            List<TeamAllocation> tas = new List<TeamAllocation>();
+
+            foreach (var u in users)
+            {
+                TeamAllocation ta = new TeamAllocation();
+                ta.UserName = u.UserName;
+                if(u.UserType == "班长")
+                {
+                    ta.FixedAllocation = (FixedAllocation / users.Count) + 500;
+                }
+                else
+                {
+                    ta.FixedAllocation = FixedAllocation / users.Count;
+                }
+
+                tas.Add(ta);
+            }
+
+            ViewBag.LastProductions = LastProductions;
+            ViewBag.QualityRate = QualityRate;
+            ViewBag.Income = Income;
+            ViewBag.Punishment = Punishment;
+            ViewBag.FixedAllocation = FixedAllocation;
+            ViewBag.AllocationCount = AllocationCount;
+
+
+            return View(tas);
+        }
+
+
+        [HttpPost]
+        public string TeamAllocation(List<TeamAllocation> teamAllocations)
+        {
+            var CreateTime = DateTime.Now;
+            foreach (var w in teamAllocations)
+            {
+                w.CreateTime = CreateTime;
+                model.TeamAllocation.Add(w);
+                w.Date = DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+            }
+            model.SaveChanges();
+            return "{\"success\":true}";
+        }
+
+        public ActionResult DefalutReport(string team)
+        {
+            double LastProductions = 0;
+            double QualityRate = 0;
+            double Income = 0;
+            double Punishment = 0;
+
+            Product product = model.Product.First();
+
+            DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime end = start.AddMonths(1);
+
+            List<Warehousing> ws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end && p.WarehousingTeam == team).ToList();
+
+            double AllLastProductions = 0;
+            if (ws.Any())
+            {
+                AllLastProductions = ws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+            }
+
+            List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
+
+            double Scrap = 0;
+            if (qs.Any())
+            {
+                Scrap = qs.Sum(p => p.ScrapCount) * product.OneOfWeight;
+            }
+
+            LastProductions = AllLastProductions - Scrap ;
+
+            QualityRate = (LastProductions / AllLastProductions) * 100;
+
+            
+            string dateString = DateTime.Now.ToString("yyyy-MM");
+            List<RewardPunishment> rps = model.RewardPunishment.Where(p => p.Date == dateString).ToList();
+            if (rps.Any())
+            {
+                Punishment = rps.Sum(p => p.Count);
+            }
+
+            Income =  LastProductions * product.OneOfPrice + Punishment;
+
+            //
+            List<TodayProductRate> tprList = new List<TodayProductRate>();
+
+            DateTime todaystart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime todayend = todaystart.AddDays(1);
+
+            List<Warehousing> todayws = model.Warehousing.Where(p => p.WarehousingTime >= todaystart && p.WarehousingTime <= todayend && p.WarehousingTeam == team).ToList();
+
+            List<string> ProductNameList = todayws.Select(p => p.ProductName).Distinct().ToList();
+
+            
+
+            double todayProduction = 0;
+            if(todayws.Any())
+            {
+                todayProduction = todayws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+            }
+
+            foreach (var productname in ProductNameList)
+            {
+                TodayProductRate tpr = new TodayProductRate();
+                tpr.ProductName = productname;
+                tpr.ProductCount = 0;
+                if (todayws.Where(p => p.ProductName == productname).Any())
+                {
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                }
+                tpr.ProductRate = 0;
+                if(todayProduction != 0)
+                {
+                    tpr.ProductRate = tpr.ProductCount / todayProduction *100;
+                }
+
+                tprList.Add(tpr);
+            }
+
+            //
+            List<EveryDayProducttion> edpList = new List<EveryDayProducttion>();
+
+            DateTime lastDay = todaystart.AddDays(-6);
+
+            for(int i = 0; i < 7; i++)
+            {
+                DateTime temptime = lastDay.AddDays(i);
+                DateTime tempendtime = lastDay.AddDays(i + 1);
+
+                EveryDayProducttion edp = new EveryDayProducttion();
+                edp.Name = temptime.ToString("MM/dd");
+                edp.Value = 0;
+                List<Warehousing> edpws = model.Warehousing.Where(p => p.WarehousingTime >= temptime && p.WarehousingTime <= tempendtime).ToList();
+                if(edpws.Any())
+                {
+                    edp.Value = edpws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                }
+
+                edpList.Add(edp);
+            }
+
+            ViewBag.LastProductions = LastProductions;
+            ViewBag.QualityRate = QualityRate;
+            ViewBag.Income = Income;
+            ViewBag.Punishment = Punishment;
+            ViewBag.tprList = tprList;
+            ViewBag.edpList = edpList;
+
+            return View();
+        }
+
+        public ActionResult ProductReport()
+        {
+            Product product = model.Product.First();
+
+            List<Order> orders = model.Order.ToList();
+            double AllorderCount = 0;
+            if (orders.Any())
+            {
+                AllorderCount = orders.Sum(p => p.ProductCount);
+            }
+
+            List<Warehousing> allws = model.Warehousing.ToList();
+            double WarehousingCount = 0;
+            if(allws.Any())
+            {
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * 1.5;
+            }
+
+            List<SendOrder> sendorders = model.SendOrder.ToList();
+            double sendCount = 0;
+            if(sendorders.Any())
+            {
+                sendCount = sendorders.Sum(p => p.SendCount);
+            }
+
+            double Respository = WarehousingCount - sendCount;
+
+            double MonthProductions = 0;
+            double QualityRate = 0;
+
+            DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime end = start.AddMonths(1);
+
+            List<Warehousing> monthws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end).ToList();
+
+            double AllMonthProductions = 0;
+            if (monthws.Any())
+            {
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+            }
+
+            List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end).ToList();
+
+            double Scrap = 0;
+            if (monthqs.Any())
+            {
+                Scrap = monthqs.Sum(p => p.ScrapCount) * product.OneOfWeight;
+            }
+
+            MonthProductions = AllMonthProductions - Scrap;
+
+            QualityRate = (MonthProductions / AllMonthProductions) * 100;
+
+            //
+            List<TodayProductRate> tprList = new List<TodayProductRate>();
+            DateTime todaystart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime todayend = todaystart.AddDays(1);
+
+            List<Warehousing> todayws = model.Warehousing.Where(p => p.WarehousingTime >= todaystart && p.WarehousingTime <= todayend).ToList();
+
+            List<string> ProductNameList = todayws.Select(p => p.ProductName).Distinct().ToList();
+
+            double todayProduction = 0;
+            if (todayws.Any())
+            {
+                todayProduction = todayws.Sum(p => p.WarehousingCount);
+            }
+
+            foreach (var productname in ProductNameList)
+            {
+                TodayProductRate tpr = new TodayProductRate();
+                tpr.ProductName = productname;
+                tpr.ProductCount = 0;
+                if (todayws.Where(p => p.ProductName == productname).Any())
+                {
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                }
+                tpr.ProductRate = 0;
+                if (todayProduction != 0)
+                {
+                    tpr.ProductRate = tpr.ProductCount / todayProduction * 100;
+                }
+
+                tprList.Add(tpr);
+            }
+            //
+            List<TeamProduction> tpList = new List<TeamProduction>();            
+
+            List<string> TeamList = monthws.Select(p => p.WarehousingTeam).Distinct().ToList();
+
+            foreach (var team in TeamList)
+            {
+                TeamProduction tp = new TeamProduction();
+                tp.Team = team;
+                double ProductCount = 0;
+                if (monthws.Where(p => p.WarehousingTeam == team).Any())
+                {
+                    ProductCount = monthws.Where(p => p.WarehousingTeam == team).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                }
+                tp.ProductRate = 0;
+                if (AllMonthProductions != 0)
+                {
+                    tp.ProductRate = (ProductCount / AllMonthProductions) * 100;
+                }
+
+                double teamScrap = 0;
+                if (monthqs.Where(p => p.CheckTeam == team).Any())
+                {
+                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount);
+                }
+                tp.ScrapRate = 0;
+                if(ProductCount != 0)
+                {
+                    tp.ScrapRate = (teamScrap / ProductCount) * 100;
+                }
+
+
+                tpList.Add(tp);
+            }
+
+            ViewBag.AllorderCount = AllorderCount;
+            ViewBag.Respository = Respository;
+            ViewBag.MonthProductions = MonthProductions;
+            ViewBag.todayProduction = todayProduction;
+
+            ViewBag.tprList = tprList;
+            ViewBag.tpList = tpList;
+
+            return View();
+        }
+
+        public ActionResult SaleReport()
+        {
+            Product product = model.Product.First();
+
+            List<Order> orders = model.Order.ToList();
+            double AllorderCount = 0;
+            double OrderPriceCount = 0;
+            if (orders.Any())
+            {
+                AllorderCount = orders.Sum(p => p.ProductCount);
+                OrderPriceCount = orders.Sum(p => p.OrderPrice);
+            }
+
+            double DoneOrderCount = 0;
+            List<SendOrder> sendOrders = model.SendOrder.ToList();
+            if (sendOrders.Any())
+            {
+                DoneOrderCount = sendOrders.Sum(p => p.ReceiveCount);
+            }
+
+            double ContinueOrderCount = AllorderCount - DoneOrderCount;
+
+            //
+            List<CustomerSpread> csList = new List<CustomerSpread>();
+            List<CustomerPriceRate> cprList = new List<CustomerPriceRate>();
+            List<Customer> customers = orders.Select(p => p.Customer).Distinct().ToList();
+
+            foreach(var custom in customers)
+            {
+                
+                List<Order> temporder = orders.Where(p => p.Customer.Id == custom.Id).ToList();
+
+                List<int> orderids = orders.Select(p => p.Id).ToList();
+
+                List<SendOrder> tempsend = sendOrders.Where(p => orderids.Contains(p.Order.Id)).ToList();
+
+                CustomerSpread cs = new CustomerSpread();
+
+                double a = temporder.Sum(p => p.ProductCount);
+
+                double b = tempsend.Sum(p => p.ReceiveCount);
+
+                double c = (a - b) / a * 100;
+
+                double d = 0;
+
+                cs.CustomerName = custom.CustomerName;
+                cs.Rate = c;
+                cs.ScrapRate = d;
+
+                csList.Add(cs);
+
+                CustomerPriceRate cpr = new CustomerPriceRate();
+                cpr.CustomerName = custom.CustomerName;
+                cpr.CustomerPriceCount = temporder.Sum(p => p.OrderPrice);
+                if(OrderPriceCount != 0)
+                {
+                    cpr.Rate = cpr.CustomerPriceCount / OrderPriceCount * 100;
+                }
+
+                cprList.Add(cpr);
+            }
+            //
+            List<FurtureXisMonth> fxmList = new List<FurtureXisMonth>();
+            DateTime monthstart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            for(int i = 0; i < 6; i++)
+            {
+                FurtureXisMonth fxm = new FurtureXisMonth();
+                DateTime tempstart = monthstart.AddMonths(i);
+                DateTime tempend = tempstart.AddMonths(1);
+
+                List<Order> temporder = orders.Where(p => p.DeliveryTime >= tempstart && p.DeliveryTime <= tempend).ToList();
+
+                fxm.Name = tempstart.ToString("yy/MM");
+                if(temporder.Any())
+                {
+                    fxm.Value = temporder.Sum(p => p.ProductCount);
+                }
+
+                fxmList.Add(fxm);
+            }
+
+            ViewBag.AllorderCount = AllorderCount;
+            ViewBag.DoneOrderCount = DoneOrderCount;
+            ViewBag.ContinueOrderCount = ContinueOrderCount;
+            ViewBag.OrderPriceCount = OrderPriceCount;
+            ViewBag.csList = csList;
+            ViewBag.fxmList = fxmList;
+            ViewBag.cprList = cprList;
+
+
+            return View();
+        }
+
+        public ActionResult MainReport()
+        {
+            Product product = model.Product.First();
+
+            List<Order> orders = model.Order.ToList();
+            double AllorderCount = 0;
+            double OrderPriceCount = 0;
+            if (orders.Any())
+            {
+                AllorderCount = orders.Sum(p => p.ProductCount);
+                OrderPriceCount = orders.Sum(p => p.OrderPrice);
+            }
+
+            double MonthOrderPriceCount = 0;
+            DateTime monthstart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime monthend = monthstart.AddMonths(1);
+
+            List<Order> monthOrders = orders.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend).ToList();
+            if(monthOrders.Any())
+            {
+                MonthOrderPriceCount = monthOrders.Sum(p => p.OrderPrice);
+            }
+
+            double DoneOrderCount = 0;
+            List<SendOrder> sendOrders = model.SendOrder.ToList();
+            if (sendOrders.Any())
+            {
+                DoneOrderCount = sendOrders.Sum(p => p.ReceiveCount);
+            }
+
+            double DoneOrderPriceCount = DoneOrderCount * product.OneOfPrice;
+
+            List<QualityInspection> qs = model.QualityInspection.ToList();
+
+            double Scrap = 0;
+            if (qs.Any())
+            {
+                Scrap = qs.Sum(p => p.ScrapCount);
+            }
+
+            double ScrapRate = 0;
+            if(AllorderCount !=0)
+            {
+                ScrapRate = Scrap * product.OneOfWeight / AllorderCount * 100;
+            }
+
+            List<Warehousing> allws = model.Warehousing.ToList();
+            double WarehousingCount = 0;
+            if (allws.Any())
+            {
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * 1.5;
+            }
+
+            List<SendOrder> sendorders = model.SendOrder.ToList();
+            double sendCount = 0;
+            if (sendorders.Any())
+            {
+                sendCount = sendorders.Sum(p => p.SendCount);
+            }
+
+            double Respository = WarehousingCount - sendCount;
+
+            double MonthScrapRate = 0;
+
+            List<Warehousing> monthws = model.Warehousing.Where(p => p.WarehousingTime >= monthstart && p.WarehousingTime <= monthend).ToList();
+
+            double AllMonthProductions = 0;
+            if (monthws.Any())
+            {
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount);
+            }
+
+            List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend).ToList();
+
+            double MonthScrap = 0;
+            if (monthqs.Any())
+            {
+                MonthScrap = monthqs.Sum(p => p.ScrapCount);
+            }
+
+            if(AllMonthProductions != 0)
+            {
+                MonthScrapRate = MonthScrap / AllMonthProductions *100;
+            }
+
+            List<MonthProduction> mpList = new List<MonthProduction>();
+            DateTime lastmonthstart = monthstart.AddMonths(-5);
+
+            for(int i=0;i<6;i++)
+            {
+                MonthProduction mp = new MonthProduction();
+
+                DateTime tempstart = lastmonthstart.AddMonths(i);
+                DateTime tempend = tempstart.AddMonths(1);
+
+                List<Warehousing> tempmonthws = model.Warehousing.Where(p => p.WarehousingTime >= tempstart && p.WarehousingTime <= tempend).ToList();
+
+                mp.Name = tempstart.ToString("yy/MM");
+
+                if (tempmonthws.Any())
+                {
+                    mp.Value = tempmonthws.Sum(p => p.WarehousingCount);
+                }
+
+                mpList.Add(mp);
+            }
+
+            List<MonthSand> msList = new List<MonthSand>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                MonthSand ms = new MonthSand();
+
+                DateTime tempstart = lastmonthstart.AddMonths(i);
+                DateTime tempend = tempstart.AddMonths(1);
+
+                List<MaterialOrder> tempmonthmo = model.MaterialOrder.Where(p => p.ReceiveTime >= tempstart && p.ReceiveTime <= tempend).ToList();
+
+                ms.Name = tempstart.ToString("yy/MM");
+
+                if (tempmonthmo.Any())
+                {
+                    ms.Value = tempmonthmo.Sum(p => p.ReceiveCount);
+                }
+
+                msList.Add(ms);
+            }
+
+            ViewBag.OrderPriceCount = OrderPriceCount;
+            ViewBag.MonthOrderPriceCount = MonthOrderPriceCount;
+            ViewBag.AllorderCount = AllorderCount;
+            ViewBag.DoneOrderCount = DoneOrderCount;
+            ViewBag.DoneOrderPriceCount = DoneOrderPriceCount;
+            ViewBag.ScrapRate = ScrapRate;
+            ViewBag.WarehousingCount = WarehousingCount;
+            ViewBag.Respository = Respository;
+            ViewBag.MonthScrapRate = MonthScrapRate;
+            ViewBag.mpList = mpList;
+            ViewBag.msList = msList;
+
+            return View();
+        }
+
+    }
+}

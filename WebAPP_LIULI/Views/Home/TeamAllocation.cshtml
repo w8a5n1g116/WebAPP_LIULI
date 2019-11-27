@@ -1,0 +1,198 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<TeamAllocation> m = Model;
+    if (m == null)
+    {
+        m = new List<TeamAllocation>();
+    }
+
+    User user = (User)Session["User"];
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">经营分配</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form">
+                <div class="row m-b-20">
+                    <div class="col-6">
+                        <div class="btn btn-block btn-primary">
+                            <h5>上月产量</h5>
+                            <span id="LastProductions">@ViewBag.LastProductions</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="btn btn-block btn-warning">
+                            <h5>合格率</h5>
+                            <span id="QualityRate">@ViewBag.QualityRate.ToString("0.00") %</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row m-b-20">
+                    <div class="col-6">
+                        <div class="btn btn-block btn-success">
+                            <h5>班组收入</h5>
+                            <span id="Income">@ViewBag.Income</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="btn btn-block btn-danger">
+                            <h5>奖罚</h5>
+                            <span id="Punishment">@ViewBag.Punishment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row m-b-20">
+                    <div class="col-12">
+                        <div class="btn btn-block btn-pink">
+                            <h5>可分配金额</h5>
+                            <span id="AllocationCount">@ViewBag.AllocationCount</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group row form-inline">
+                    <label class="col-3 col-form-label">历史查询</label>
+                    <div class="col-9">
+                        <div class="row form-inline">
+                            <div class="col-8"><input class="form-control" type="month" name="month"></div>
+                            <div class="col-4"><button type="button" class="btn btn-xs btn-purple waves-effect waves-light" id="Query">查询</button></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>班组成员</th>
+                            <th>固定分配</th>
+                            <th>班长分配</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in m)
+                        {
+                            <tr>
+                                <td width="30%">@c.UserName<input hidden="hidden" name="UserName" value="@c.UserName"></td>
+                                <td width="30%">@c.FixedAllocation<input hidden="hidden" type="text" name="FixedAllocation" value="@c.FixedAllocation"></td>
+                                <td width="40%"><input class="form-control" type="number" name="Allocation" value="@c.Allocation"></td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">备注</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" name="Remarks" id="Remarks" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light mt-2" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    var allocationCount = Number($('#AllocationCount').html());
+                    var count = new Number();
+                    count = 0;
+                    $.each($('input[name="Allocation"]'), function (i, val) {
+                        count += Number($(val).val());
+                    });
+
+                    if (count != allocationCount) {
+                        swal('成员分配之和应等于可分配金额！').catch(swal.noop)
+                        return;
+                    }
+
+                    var teamAllocations = new Array();
+                    var Remarks = $('#Remarks').val();
+                    $.each($('tbody').children('tr'), function (i, val) {
+                        var UserName = $($(val).find('input[name="UserName"]')[0]).val();
+                        var FixedAllocation = $($(val).find('input[name="FixedAllocation"]')[0]).val();
+                        var Allocation = $($(val).find('input[name="Allocation"]')[0]).val();
+
+                        var postdata =
+                        {
+                            UserName: UserName,
+                            FixedAllocation: FixedAllocation,
+                            Allocation: Allocation,
+                            Remarks:Remarks
+                        };
+
+                        teamAllocations.push(postdata);
+                    });
+
+                    $.post('/Home/TeamAllocation', { teamAllocations }, function (data) {
+                        var jsonObject = JSON.parse(data);
+                        if (jsonObject.success == true) {
+                            swal(
+                                '提交成功！',
+                                '您已成功提交！',
+                                'success'
+                            )
+                            window.location = '/Home/Index';
+                        }
+                        else {
+                            swal(
+                                '提交失败！',
+                                '可能因为网络原因提交失败，请重试！',
+                                'error'
+                            )
+                        }
+
+                    });
+
+
+
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

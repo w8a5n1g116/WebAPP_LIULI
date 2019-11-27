@@ -1,0 +1,270 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+
+    List<MonthProduction> mpList = ViewBag.mpList;
+    List<MonthSand> msList = ViewBag.msList;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h2 class="page-title">总经理报表</h2>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">0元</h2>
+                <h5>账户金额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">0元</h2>
+                <h5>本月支付</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-success" data-plugin="counterup">0元</h2>
+                <h5>本月收款</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-danger" data-plugin="counterup">0元</h2>
+                <h5>全年利润</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">0元</h2>
+                <h5>当月利润</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.OrderPriceCount 元</h2>
+                <h5>总销售额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">0元</h2>
+                <h5>总成本 + 总费用</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.MonthOrderPriceCount 元</h2>
+                <h5>当月销售额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-success" data-plugin="counterup">0元</h2>
+                <h5>应收</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-danger" data-plugin="counterup">0元</h2>
+                <h5>应付</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">总订单</th>
+                            <th width="35%">已交付</th>
+                            <th width="35%">废品率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@ViewBag.AllorderCount 吨</td>
+                            <td>@ViewBag.DoneOrderCount 吨</td>
+                            <td rowspan="2">
+                                <div class="widget-chart-box-1">
+                                    <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                           data-bgColor="#F9B9B9" value="@ViewBag.ScrapRate.ToString("0.00")"
+                                           data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                           data-thickness=".15" />
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>@ViewBag.OrderPriceCount 元</td>
+                            <td>@ViewBag.DoneOrderPriceCount 元</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">总产量</th>
+                            <th width="35%">库存量</th>
+                            <th width="35%">当月废品率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@ViewBag.WarehousingCount 吨</td>
+                            <td>@ViewBag.Respository 吨</td>
+                            <td>
+                                <div class="widget-chart-box-1">
+                                    <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                           data-bgColor="#F9B9B9" value="@ViewBag.MonthScrapRate.ToString("0.00")"
+                                           data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                           data-thickness=".15" />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-6">
+        <div class="card-box">
+
+            <h4 class="header-title m-t-0 m-b-30">月度产品分布</h4>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li class="list-inline-item">
+                        <h5 style="color: #ff8acc;"><i class="fa fa-circle m-r-5"></i>产量</h5>
+                    </li>
+                </ul>
+            </div>
+            <div id="morris-bar-example" style="height: 300px;"></div>
+        </div>
+    </div><!-- end col-->
+
+    <div class="col-xl-6">
+        <div class="card-box">
+
+            <h4 class="header-title m-t-0 m-b-30">原沙月度运输量</h4>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li class="list-inline-item">
+                        <h5 style="color: #ff8acc;"><i class="fa fa-circle m-r-5"></i>沙量</h5>
+                    </li>
+                </ul>
+            </div>
+            <div id="morris-bar-example2" style="height: 300px;"></div>
+        </div>
+    </div><!-- end col-->
+
+
+</div>
+<!-- end row -->
+
+<script>
+    $(document).ready(function () {
+        var $barData = [
+            @{
+                foreach (MonthProduction mp in mpList)
+                {
+                    <text>{y:'@mp.Name',a:@mp.Value}</text>
+                    if (mpList.Last() != mp)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example',
+            data: $barData,
+            xkey: 'y',
+            ykeys: ['a'],
+            labels: ['产量'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc']
+        });
+
+        var $barData2 = [
+            @{
+                foreach (MonthSand ms in msList)
+                {
+                    <text>{y:'@ms.Name',a:@ms.Value}</text>
+                    if (msList.Last() != ms)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example2',
+            data: $barData2,
+            xkey: 'y',
+            ykeys: ['a'],
+            labels: ['沙量'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc']
+        });
+
+    });
+</script>

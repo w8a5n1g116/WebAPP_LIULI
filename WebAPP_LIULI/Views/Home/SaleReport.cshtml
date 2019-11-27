@@ -1,0 +1,203 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+
+    List<FurtureXisMonth> fxmList = ViewBag.fxmList;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h2 class="page-title">销售报表</h2>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
+                <h5>总订单数</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.DoneOrderCount 吨</h2>
+                <h5>已交付数</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-success" data-plugin="counterup">@ViewBag.ContinueOrderCount 吨</h2>
+                <h5>待交付数</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-danger" data-plugin="counterup">@ViewBag.OrderPriceCount 元</h2>
+                <h5>总订单金额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-custom" data-plugin="counterup">0元</h2>
+                <h5>已收金额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <h2 class="text-warning" data-plugin="counterup">0元</h2>
+                <h5>应收金额</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">顾客分布</th>
+                            <th width="35%">已交付</th>
+                            <th width="35%">废品率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (CustomerSpread cs in ViewBag.csList)
+                        {
+                            <tr>
+                                <td>@cs.CustomerName</td>
+                                <td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@cs.Rate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">顾客</th>
+                            <th width="35%">订单金额</th>
+                            <th width="35%">占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CustomerPriceRate cpr in ViewBag.cprList)
+                        {
+                            <tr>
+                                <td>@cpr.CustomerName</td>
+                                <td>@cpr.CustomerPriceCount 元</td>
+                                <td>
+                                    <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
+                                    <div class="progress progress-bar-primary-alt progress-sm m-b-20">
+                                        <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@cpr.Rate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @cpr.Rate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
+                                        </div><!-- /.progress-bar .progress-bar-danger -->
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card-box">
+
+            <h4 class="header-title m-t-0 m-b-30">未来6月待交付订单量</h4>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li class="list-inline-item">
+                        <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>订单量</h5>
+                    </li>
+                </ul>
+            </div>
+            <div id="morris-bar-example" style="height: 300px;"></div>
+        </div>
+    </div><!-- end col-->
+
+
+</div>
+<!-- end row -->
+
+<script>
+    $(document).ready(function () {
+        var $barData = [
+            @{
+                foreach (FurtureXisMonth fxm in fxmList)
+                {
+                    <text>{y:'@fxm.Name',a:@fxm.Value}</text>
+                    if (fxmList.Last() != fxm)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example',
+            data: $barData,
+            xkey: 'y',
+            ykeys: ['a'],
+            labels: ['订单量'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc']
+        });
+
+    });
+</script>

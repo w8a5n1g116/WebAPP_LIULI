@@ -1,0 +1,127 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+@*<div class="row">
+    <div class="col-sm-12">
+
+        <h2 class="page-title">主页</h2>
+    </div>
+</div>*@
+<!-- end page title end breadcrumb -->
+
+
+
+
+    <div class="row mt-3">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-custom" data-plugin="counterup">100 吨</h2>
+                    <h5>本月产量</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-warning" data-plugin="counterup">100 %</h2>
+                    <h5>合格率</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-success" data-plugin="counterup">10000 元</h2>
+                    <h5>班组收入</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-danger" data-plugin="counterup">0 元</h2>
+                    <h5>奖罚</h5>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+        <!--  Modal content for the above example -->
+        <div id="loading" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title mt-0" id="myLargeModalLabel">提示</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        正在登陆 请稍等....
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+<!-- end row -->
+
+    <script>
+    $(document).ready(function () {
+        dd.ready(function () {
+            // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
+            dd.runtime.permission.requestAuthCode({
+                corpId: "ding2c79175966a6abea35c2f4657eb6378f",
+                onSuccess: function (result) {
+                    /*{
+                        code: 'hYLK98jkf0m' //string authCode
+                    }*/
+
+                    var noUser = true;
+                    @if(user != null)
+                    {
+                        <text>
+                    noUser = false;
+                        </text>
+                    }
+
+                    if (noUser) {
+                        $('#loading').modal('show');
+
+                        $.get('/Home/GetUserInfo?code=' + result.code, function (data) {
+                            $('#loading').modal('hide');
+                            if (data == null || data == "" || data == undefined) {
+                                window.location = '/Home/Index';
+                            } else {
+                                window.location = '/Home/DefalutReport?team='+ data;
+                            }
+                            
+                        });
+                    }
+
+                },
+                onFail: function (err) { }
+
+            });
+        });
+
+        dd.error(function (error) {
+            /**
+             {
+                errorMessage:"错误信息",// errorMessage 信息会展示出钉钉服务端生成签名使用的参数，请和您生成签名的参数作对比，找出错误的参数
+                errorCode: "错误码"
+             }
+            **/
+            alert('dd error: ' + JSON.stringify(error));
+        });
+
+    });
+    </script>

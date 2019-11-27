@@ -1,0 +1,50 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<RewardPunishment> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            <a href="/Home/RewardPunishment" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">奖罚列表</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+
+        @foreach (var m in modelList)
+        {
+            <div class="card-box">
+                <dl class="row">
+                    <dt class="col-6">奖罚类型</dt>
+                    <dd class="col-6">@m.Type</dd>
+                    <dt class="col-6">奖罚班组</dt>
+                    <dd class="col-6">@m.Team</dd>
+                    <dt class="col-6">奖罚金额</dt>
+                    <dd class="col-6">@m.Count</dd>
+                    <dt class="col-6">所属月份</dt>
+                    <dd class="col-6">@m.Date</dd>
+                    <dt class="col-6">录入日期</dt>
+                    <dd class="col-6">@m.CreateTime.ToString("yyyy-MM-dd")</dd>
+
+                </dl>
+                <a href="/Home/RewardPunishment?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">操作</a>
+            </div>
+
+        }
+
+    </div><!-- end col -->
+
+    <script>
+
+    </script>
+
+</div>
+<!-- end row -->

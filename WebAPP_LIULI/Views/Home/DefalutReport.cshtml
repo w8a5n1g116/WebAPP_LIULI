@@ -1,0 +1,156 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    User user = (User)Session["User"];
+
+    List<EveryDayProducttion> edpList = ViewBag.edpList;
+}
+
+<!-- Page-Title -->
+@*<div class="row">
+    <div class="col-sm-12">
+
+        <h2 class="page-title">主页</h2>
+    </div>
+</div>*@
+<!-- end page title end breadcrumb -->
+
+
+
+
+    <div class="row mt-3">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-custom" data-plugin="counterup">@ViewBag.LastProductions 吨</h2>
+                    <h5>本月产量</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-warning" data-plugin="counterup">@ViewBag.QualityRate.ToString("0.00") %</h2>
+                    <h5>合格率</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-success" data-plugin="counterup">@ViewBag.Income 元</h2>
+                    <h5>班组收入</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-danger" data-plugin="counterup">@ViewBag.Punishment 元</h2>
+                    <h5>奖罚</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="35%">产品名称</th>
+                                <th width="35%">今日产品</th>
+                                <th width="30%">占比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (TodayProductRate tpr in ViewBag.tprList)
+                            {
+                                <tr>
+                                    <td>@tpr.ProductName</td>
+                                    <td>@tpr.ProductCount 吨</td>
+                                    <td>
+                                        <p class="font-600 m-b-5"> <span class="text-primary pull-right">@tpr.ProductRate.ToString("0.00") %</span></p>
+                                        <div class="progress progress-bar-primary-alt progress-sm m-b-20">
+                                            <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@tpr.ProductRate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @tpr.ProductRate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
+                                            </div><!-- /.progress-bar .progress-bar-danger -->
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="card-box">                
+
+                <h4 class="header-title m-t-0 m-b-30">每日产量统计图</h4>
+
+                <div class="text-center">
+                    <ul class="list-inline chart-detail-list">
+                        <li class="list-inline-item">
+                            <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>产量</h5>
+                        </li>
+                    </ul>
+                </div>
+                <div id="morris-bar-example" style="height: 300px;"></div>
+            </div>
+        </div><!-- end col-->
+
+
+        <!--  Modal content for the above example -->
+        <div id="loading" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title mt-0" id="myLargeModalLabel">提示</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        正在登陆 请稍等....
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+<!-- end row -->
+
+    <script>
+    $(document).ready(function () {
+
+        var $barData = [
+            @{
+                foreach (EveryDayProducttion edp in edpList)
+                {
+                    <text>{y:'@edp.Name',a:@edp.Value}</text>
+                    if (edpList.Last() != edp)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example',
+            data: $barData,
+            xkey: 'y',
+            ykeys: ['a'],
+            labels: ['产量'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc']
+        });
+
+    });
+    </script>
