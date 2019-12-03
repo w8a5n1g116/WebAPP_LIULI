@@ -1,0 +1,97 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<MaterialOrder> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <h4 class="page-title">原料发货对账</h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="form-group form-inline">
+            <label class="col-3 col-form-label">选择司机</label>
+            <div class="col-6">
+                <select id="Driver" class="form-control">
+                    @foreach (var c in ViewBag.drivers)
+                    {
+                        <option value="@c.Id" @if ( c.Id == ViewBag.DriverID) { <text> selected</text> }>@c.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3">
+                <button id="queryButton" type="button" class="btn btn-primary btn-md waves-effect waves-light"><i class="md md-add"></i>查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <div class="table-responsive">
+                <table class="table  text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>发货数量</th>
+                            <th>发货时间</th>
+                            <th>收货数量</th>
+                            <th>金额</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in modelList)
+                        {
+                        <tr>
+                            <td>@m.SendCount 吨</td>
+                            <td>@m.SendTime.Value.ToString("yy/MM/dd")</td>
+                            <td>@m.ReceiveCount 吨</td>
+                            <td>@(m.ReceiveCount * m.OneOfTonPrice) 元</td>
+                            
+                            <td>
+                                @if (m.IsComfirm == 0)
+                                {
+                                    <button class="btn btn-xs btn-purple waves-effect waves-light" onclick="Confirm(this,'@m.Id')">对账</button>
+                                }
+
+                            </td>
+
+                        </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div><!-- end col -->
+        
+    <script>
+        $(document).ready(function () {
+
+            $('#queryButton').click(function () {
+                var id = $('#Driver').val();
+                window.location = '/Home/MaterialDriverQuery?id=' + id;
+            })
+        });
+
+    function Confirm(dom, id) {
+        $.post('/Home/MaterialConfirm', { id: id }, function (data) {
+            var o = JSON.parse(data);
+            if (o.data == true) {
+                $(dom).attr('hidden', 'hidden');
+            }
+        });
+        
+    }
+    </script>
+
+</div>
+<!-- end row -->

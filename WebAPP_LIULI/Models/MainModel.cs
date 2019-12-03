@@ -34,7 +34,8 @@
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<TeamAllocation> TeamAllocation { get; set; }
         public virtual DbSet<RewardPunishment> RewardPunishment { get; set; }
-        
+        public virtual DbSet<BaseData> BaseData { get; set; }
+
     }
 
     public class Driver
@@ -50,6 +51,8 @@
         public string BankNumer { get; set; }
         public string BankName { get; set; }
         public DateTime CreateTime { get; set; }
+        public string Remarks { get; set; }
+        public int Status { get; set; }
         //public virtual ICollection<MaterialOrder> Materials { get; set; }
         //public virtual ICollection<SendOrder> SendOrders { get; set; }
     }
@@ -69,6 +72,8 @@
         public DateTime? ReceiveTime { get; set; }
         public DateTime CreateTime { get; set; }
         public virtual Driver MaterialDriver { get; set; }
+        public double OneOfTonPrice { get; set; }
+        public int IsComfirm { get; set; }
 
     }
 
@@ -83,8 +88,9 @@
         public string UserPhone { get; set; }
         public DateTime CreateTime { get; set; }
         public string DingUserId { get; set; }
+        public string Remarks { get; set; }
 
-}
+    }
 
     public class QualityInspection
     {
@@ -123,12 +129,14 @@
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string CustomerName { get; set; }
+        public string CustomerShortName { get; set; }
         public string CustomerCompanyNumber { get; set; }
         public string CustomerAddress { get; set; }
         public string CustomerPhone { get; set; }
         public string Contact { get; set; }
         public string ContactPhone { get; set; }
         public DateTime CreateTime { get; set; }
+        public string Remarks { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
 
@@ -144,10 +152,11 @@
         public double ProductCount { get; set; }
         public string OrderStatus { get; set; }
         public string Salesman { get; set; }
-        public double OrderPrice { get; set; }
+        public double OrderPrice { get; set; } 
         public string Remarks { get; set; }
         public DateTime CreateTime { get; set; }
         public virtual Customer Customer { get; set; }
+        public double DeliveryCount { get; set; }
     }
 
     public class SendOrder
@@ -169,6 +178,8 @@
         public string Contact { get; set; }
         public string ContactPhone { get; set; }
         public virtual Order Order { get; set; }
+        public double OneOfTonPrice { get; set; }
+        public int IsComfirm { get; set; }
 
 
 
@@ -182,6 +193,7 @@
         public string ProductName { get; set; }
         public double OneOfWeight { get; set; }
         public double OneOfPrice { get; set; }
+        public string Remarks { get; set; }
     }
 
     public class TeamAllocation
@@ -209,6 +221,15 @@
         public DateTime CreateTime { get; set; }
         public string Remarks { get; set; }
         public string UserName { get; set; }
+    }
+
+    public class BaseData
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public double OneOfTonPrice { get; set; }
     }
 
 }

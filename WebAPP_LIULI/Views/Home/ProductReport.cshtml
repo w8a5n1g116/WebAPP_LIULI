@@ -17,7 +17,7 @@
 
 <div class="row">
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-warning" data-plugin="counterup">@ViewBag.Respository 吨</h2>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-success" data-plugin="counterup">@ViewBag.MonthProductions 吨</h2>
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-danger" data-plugin="counterup">@ViewBag.todayProduction 吨</h2>
@@ -69,7 +69,7 @@
                         @foreach (TeamProduction tp in ViewBag.tpList)
                         {
                             <tr>
-                                <td>@tp.Team</td>
+                                <td><h3>@tp.ProductCount 吨</h3>@tp.Team</td>
                                 <td>
                                     <div class="widget-chart-box-1">
                                         <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "

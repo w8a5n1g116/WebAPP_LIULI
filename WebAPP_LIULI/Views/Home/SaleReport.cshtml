@@ -19,7 +19,7 @@
 
 <div class="row">
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-warning" data-plugin="counterup">@ViewBag.DoneOrderCount 吨</h2>
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-success" data-plugin="counterup">@ViewBag.ContinueOrderCount 吨</h2>
@@ -46,16 +46,16 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-danger" data-plugin="counterup">@ViewBag.OrderPriceCount 元</h2>
+                <h2 class="text-danger" data-plugin="counterup">@((ViewBag.OrderPriceCount / 10000).ToString("0")) 万元</h2>
                 <h5>总订单金额</h5>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">0元</h2>
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-warning" data-plugin="counterup">0元</h2>
@@ -81,7 +81,7 @@
                         <tr>
                             <th width="30%">顾客分布</th>
                             <th width="35%">已交付</th>
-                            <th width="35%">废品率</th>
+                            @*<th width="35%">废品率</th>*@
                         </tr>
                     </thead>
                     <tbody>
@@ -89,7 +89,7 @@
                         @foreach (CustomerSpread cs in ViewBag.csList)
                         {
                             <tr>
-                                <td>@cs.CustomerName</td>
+                                <td><h3>@cs.CustomerCount 吨</h3>@cs.CustomerName</td>
                                 <td>
                                     <div class="widget-chart-box-1">
                                         <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
@@ -98,14 +98,14 @@
                                                data-thickness=".15" />
                                     </div>
                                 </td>
-                                <td>
+                                @*<td>
                                     <div class="widget-chart-box-1">
                                         <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
                                                data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
                                                data-skin="tron" data-angleOffset="180" data-readOnly=true
                                                data-thickness=".15" />
                                     </div>
-                                </td>
+                                </td>*@
                             </tr>
                         }
 
@@ -133,7 +133,7 @@
                         {
                             <tr>
                                 <td>@cpr.CustomerName</td>
-                                <td>@cpr.CustomerPriceCount 元</td>
+                                <td>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</td>
                                 <td>
                                     <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
                                     <div class="progress progress-bar-primary-alt progress-sm m-b-20">

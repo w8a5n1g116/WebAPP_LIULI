@@ -45,12 +45,20 @@
                             <option>水洗</option>
                             <option>分筛</option>
                             <option>发货</option>
+                            <option>库存</option>
                             <option>客户</option>
                         </select>
                     </div>
                 </div>
 
-                <input type="text" hidden="hidden" name="UnqualifiedReson" id="UnqualifiedReson"/>
+                <input type="text" hidden="hidden" name="UnqualifiedReson" id="UnqualifiedReson" />
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">报废数量/袋</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="ScrapCount" value="1">
+                    </div>
+                </div>
 
                 <div class="radio radio-info form-check-inline ml-2">
                     <input type="radio" id="CheckGood" value="合格" name="CheckResult" checked="">

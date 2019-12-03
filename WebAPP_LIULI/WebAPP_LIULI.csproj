@@ -198,6 +198,18 @@
     <Compile Include="Migrations\201911261917114_init12.Designer.cs">
       <DependentUpon>201911261917114_init12.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911291841419_init13.cs" />
+    <Compile Include="Migrations\201911291841419_init13.Designer.cs">
+      <DependentUpon>201911291841419_init13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911291931200_init14.cs" />
+    <Compile Include="Migrations\201911291931200_init14.Designer.cs">
+      <DependentUpon>201911291931200_init14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911291940252_init15.cs" />
+    <Compile Include="Migrations\201911291940252_init15.Designer.cs">
+      <DependentUpon>201911291940252_init15.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
@@ -1479,6 +1491,12 @@
     <Content Include="Views\Home\MainReport.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <Content Include="Views\Home\DefalutReport.cshtml" />
+    <Content Include="Views\Home\OrderQueryList.cshtml" />
+    <Content Include="Views\Home\BaseData.cshtml" />
+    <Content Include="Views\Home\SendOrderDriver.cshtml" />
+    <Content Include="Views\Home\SendOrderDriverList.cshtml" />
+    <Content Include="Views\Home\MaterialDriverQuery.cshtml" />
+    <Content Include="Views\Home\SendOrderDriverQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201911211610453_init.resx">
@@ -1519,6 +1537,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911261917114_init12.resx">
       <DependentUpon>201911261917114_init12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911291841419_init13.resx">
+      <DependentUpon>201911291841419_init13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911291931200_init14.resx">
+      <DependentUpon>201911291931200_init14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911291940252_init15.resx">
+      <DependentUpon>201911291940252_init15.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

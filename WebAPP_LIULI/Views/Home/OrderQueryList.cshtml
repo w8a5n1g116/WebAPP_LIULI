@@ -1,0 +1,93 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Order> modelList = Model;
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group pull-right m-t-20">
+            
+            <a href="/Home/OrderInput" class="btn btn-success btn-md waves-effect waves-light m-b-30"><i class="md md-add"></i>添加</a>
+        </div>
+        <h4 class="page-title">订单查询</h4>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="form-group form-inline">
+            <label class="col-3 col-form-label">交货开始</label>
+            <div class="col-6">
+                <input class="form-control" type="date" id="DeliveryStartTime" name="DeliveryStartTime" value="">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="form-group form-inline">
+            <label class="col-3 col-form-label">交货结束</label>
+            <div class="col-6">
+                <input class="form-control" type="date" id="DeliveryEndTime" name="DeliveryEndTime" value="">
+
+            </div>
+            <div class="col-3">
+                <button id="queryButton" type="button" class="btn btn-primary btn-md waves-effect waves-light"><i class="md md-add"></i>查询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>顾客简称</th>
+                            <th>产品名称</th>
+                            <th>订单数量</th>
+                            <th>订单状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in modelList)
+                        {
+                            <tr>
+                                <td>@m.Customer.CustomerShortName</td>
+                                <td>@m.ProductName</td>
+                                <td>@m.ProductCount 吨</td>
+                                <td>@m.OrderStatus</td>
+                                <td><a href="/Home/OrderInput?id=@m.Id" class="btn btn-xs btn-purple waves-effect waves-light">操作</a></td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div><!-- end col -->
+        
+    <script>
+        $(document).ready(function () {
+
+            $('#queryButton').click(function () {
+                var starttime = $('#DeliveryStartTime').val();
+                var endtime = $('#DeliveryEndTime').val();
+                window.location = '/Home/OrderQueryList?starttime=' + starttime + '&endtime=' + endtime;
+            })
+        });
+    </script>
+
+</div>
+<!-- end row -->

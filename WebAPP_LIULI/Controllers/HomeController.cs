@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+            //Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)
@@ -80,8 +80,12 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult SendMaterial()
         {
-            List<Driver> drivers = model.MaterialDriver.ToList();
+            List<Driver> drivers = model.MaterialDriver.Where(p => p.Status == 1).ToList();
             ViewBag.drivers = drivers;
+
+            BaseData b = model.BaseData.First();
+
+            ViewBag.OneOfTonPrice = b.OneOfTonPrice;
             return View();
         }
 
@@ -97,7 +101,7 @@ namespace WebAPP_LIULI.Controllers
             model.MaterialOrder.Add(m);
 
             model.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("DefalutReport");
         }
 
 
@@ -219,7 +223,7 @@ namespace WebAPP_LIULI.Controllers
         public ActionResult QualityInspection(QualityInspection m)
         {
             m.CreateTime = DateTime.Now;
-            m.ScrapCount = 1;
+            //m.ScrapCount = 1;
             if (m.CheckResult == "合格")
                 m.UnqualifiedReson = null;
 
@@ -232,19 +236,31 @@ namespace WebAPP_LIULI.Controllers
             return View();
         }
 
-        public ActionResult OrderList(DateTime? time)
+        public ActionResult OrderList(DateTime? starttime ,DateTime? endtime)
         {
             List<Order> mList = new List<Order>();
-            if (time == null)
-                mList = model.Order.OrderByDescending(p => p.OrderStatus).ToList();
+            if (starttime == null && endtime == null)
+                mList = model.Order.Where(p => p.OrderStatus != "已完成" ||  p.OrderStatus != "已关闭").OrderByDescending(p => p.OrderStatus).ToList();
             else
-                mList = model.Order.Where(p => 
-                p.DeliveryTime.Year == time.Value.Year &&
-                p.DeliveryTime.Month == time.Value.Month &&
-                p.DeliveryTime.Day == time.Value.Day 
+                mList = model.Order.Where(p =>
+                (p.DeliveryTime >= starttime.Value && p.DeliveryTime <= endtime.Value) &&
+                (p.OrderStatus != "已完成" || 
+                p.OrderStatus != "已关闭")
                 ).OrderByDescending(p => p.OrderStatus).ToList();
 
-            ViewBag.time = time;
+            return View(mList);
+        }
+        public ActionResult OrderQueryList(DateTime? starttime, DateTime? endtime)
+        {
+            List<Order> mList = new List<Order>();
+            if (starttime == null && endtime == null)
+                mList = model.Order.Where(p => p.OrderStatus == "已完成").OrderByDescending(p => p.OrderStatus).ToList();
+            else
+                mList = model.Order.Where(p =>
+                (p.DeliveryTime >= starttime.Value && p.DeliveryTime <= endtime.Value) &&
+                (p.OrderStatus == "已完成")
+                ).OrderByDescending(p => p.OrderStatus).ToList();
+
             return View(mList);
         }
 
@@ -338,6 +354,8 @@ namespace WebAPP_LIULI.Controllers
                 _m.Name = m.Name;
                 _m.PersonId = m.PersonId;
                 _m.PhoneNumber = m.PhoneNumber;
+                _m.Remarks = m.Remarks;
+                _m.Status = m.Status;
             }
             
             model.SaveChanges();
@@ -382,10 +400,12 @@ namespace WebAPP_LIULI.Controllers
                 Customer _m = model.Customer.Where(p => p.Id == m.Id).FirstOrDefault();
                 _m.CustomerName = m.CustomerName;
                 _m.CustomerCompanyNumber = m.CustomerCompanyNumber;
+                _m.CustomerShortName = m.CustomerShortName;
                 _m.CustomerAddress = m.CustomerAddress;
                 _m.CustomerPhone = m.CustomerPhone;
                 _m.Contact = m.Contact;
                 _m.ContactPhone = m.ContactPhone;
+                _m.Remarks = m.Remarks;
             }
            
             model.SaveChanges();
@@ -423,10 +443,29 @@ namespace WebAPP_LIULI.Controllers
                 _m.UserPhone = m.UserPhone;
                 _m.UserTeam = m.UserTeam;
                 _m.UserType = m.UserType;
+                _m.Remarks = m.Remarks;
             }
             
             model.SaveChanges();
             return RedirectToAction("UserList");
+        }
+
+        public ActionResult BaseData()
+        {
+            BaseData m = model.BaseData.FirstOrDefault();
+            if (m == null)
+                return View();
+            else
+                return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult BaseData(BaseData m)
+        {
+            BaseData _m = model.BaseData.Where(p => p.Id == m.Id).FirstOrDefault();
+            _m.OneOfTonPrice = m.OneOfTonPrice;
+            model.SaveChanges();
+            return RedirectToAction("DefalutReport");
         }
 
         public ActionResult ProductList()
@@ -465,10 +504,9 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult SendOrder(int? id)
         {
-            List<Driver> drivers = model.MaterialDriver.ToList();
-            ViewBag.drivers = drivers;
 
-            SendOrder m = model.SendOrder.Where(p => p.Order.Id == id).FirstOrDefault();
+
+            SendOrder m = model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
             if (m == null)
             {
                 m = new SendOrder();
@@ -488,7 +526,7 @@ namespace WebAPP_LIULI.Controllers
         {
             SendOrder _m = model.SendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
 
-            _m.TaskStatus = "已发货";
+            _m.TaskStatus = "准备发货";
             _m.SendCount = m.SendCount;
             _m.SendTime = m.SendTime; ;
             _m.SendDeterminePerson = m.SendDeterminePerson;
@@ -498,11 +536,42 @@ namespace WebAPP_LIULI.Controllers
             _m.Remarks = m.Remarks;
             _m.Order.OrderStatus = "部分发货";
 
+            model.SaveChanges();
+            return RedirectToAction("OrderList");
+        }
+
+        public ActionResult SendOrderDriverList()
+        {
+            List<SendOrder> mList = model.SendOrder.Where(p => p.TaskStatus == "准备发货").ToList();
+            return View(mList);
+        }
+
+        public ActionResult SendOrderDriver(int id)
+        {
+            List<Driver> drivers = model.MaterialDriver.Where(p => p.Status == 1).ToList();
+            ViewBag.drivers = drivers;
+
+            SendOrder m = model.SendOrder.Where(p => p.Id == id).FirstOrDefault();
+
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult SendOrderDriver(SendOrder m)
+        {
+            SendOrder _m = model.SendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
+
+            _m.TaskStatus = "已发货";
+            
+            _m.Remarks = m.Remarks;
+
+            _m.OneOfTonPrice = m.OneOfTonPrice;
+
             Driver driver = model.MaterialDriver.Where(p => p.Id == m.MaterialDriver.Id).First();
             _m.MaterialDriver = driver;
 
             model.SaveChanges();
-            return RedirectToAction("OrderList");
+            return RedirectToAction("SendOrderDriverList");
         }
 
         public ActionResult ReceiveSendOrderList()
@@ -536,6 +605,7 @@ namespace WebAPP_LIULI.Controllers
                 count = beforeSendOrders.Sum(p => p.ReceiveCount);
             }
             count += _m.ReceiveCount;
+            _m.Order.DeliveryCount = count;
             if(count >= order.ProductCount)
                 _m.Order.OrderStatus = "已完成";
             _m.Remarks = m.Remarks;
@@ -589,7 +659,7 @@ namespace WebAPP_LIULI.Controllers
         {
             if(string.IsNullOrEmpty(team))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("DefalutReport");
             }
 
             List<User> users = model.User.Where(p => p.UserTeam == team).ToList();          
@@ -611,7 +681,7 @@ namespace WebAPP_LIULI.Controllers
             double AllLastProductions = 0;
             if(ws.Any())
             {
-                AllLastProductions = ws.Sum(p => p.WarehousingCount);
+                AllLastProductions = ws.Sum(p => p.WarehousingCount) * 1.5;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
@@ -619,12 +689,12 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if(qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount);
+                Scrap = qs.Sum(p => p.ScrapCount) * 1.5 ;
             }
 
-            LastProductions = (AllLastProductions - Scrap) * product.OneOfWeight;
+            LastProductions = AllLastProductions;
 
-            QualityRate = (LastProductions / AllLastProductions) * 100;
+            QualityRate = (LastProductions / (LastProductions + Scrap)) * 100;
 
             
 
@@ -641,7 +711,7 @@ namespace WebAPP_LIULI.Controllers
 
             FixedAllocation = Income * 0.6;
 
-            AllocationCount = Income * 0.35;
+            AllocationCount = Income * 0.4 - 500;
 
             List<TeamAllocation> tas = new List<TeamAllocation>();
 
@@ -704,7 +774,7 @@ namespace WebAPP_LIULI.Controllers
             double AllLastProductions = 0;
             if (ws.Any())
             {
-                AllLastProductions = ws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                AllLastProductions = ws.Sum(p => p.WarehousingCount) * 1.5;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
@@ -712,12 +782,12 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount) * product.OneOfWeight;
+                Scrap = qs.Sum(p => p.ScrapCount) * 1.5;
             }
 
-            LastProductions = AllLastProductions - Scrap ;
+            LastProductions = AllLastProductions;
 
-            QualityRate = (LastProductions / AllLastProductions) * 100;
+            QualityRate = (LastProductions / (LastProductions + Scrap)) * 100;
 
             
             string dateString = DateTime.Now.ToString("yyyy-MM");
@@ -744,7 +814,7 @@ namespace WebAPP_LIULI.Controllers
             double todayProduction = 0;
             if(todayws.Any())
             {
-                todayProduction = todayws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                todayProduction = todayws.Sum(p => p.WarehousingCount) * 1.5;
             }
 
             foreach (var productname in ProductNameList)
@@ -754,7 +824,7 @@ namespace WebAPP_LIULI.Controllers
                 tpr.ProductCount = 0;
                 if (todayws.Where(p => p.ProductName == productname).Any())
                 {
-                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * 1.5;
                 }
                 tpr.ProductRate = 0;
                 if(todayProduction != 0)
@@ -768,9 +838,11 @@ namespace WebAPP_LIULI.Controllers
             //
             List<EveryDayProducttion> edpList = new List<EveryDayProducttion>();
 
-            DateTime lastDay = todaystart.AddDays(-6);
+            TimeSpan ts = todaystart - start;
 
-            for(int i = 0; i < 7; i++)
+            DateTime lastDay = todaystart.AddDays( -ts.Days);
+
+            for(int i = 0; i < ts.Days +1 ; i++)
             {
                 DateTime temptime = lastDay.AddDays(i);
                 DateTime tempendtime = lastDay.AddDays(i + 1);
@@ -781,7 +853,7 @@ namespace WebAPP_LIULI.Controllers
                 List<Warehousing> edpws = model.Warehousing.Where(p => p.WarehousingTime >= temptime && p.WarehousingTime <= tempendtime).ToList();
                 if(edpws.Any())
                 {
-                    edp.Value = edpws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                    edp.Value = edpws.Sum(p => p.WarehousingCount) * 1.5;
                 }
 
                 edpList.Add(edp);
@@ -835,7 +907,7 @@ namespace WebAPP_LIULI.Controllers
             double AllMonthProductions = 0;
             if (monthws.Any())
             {
-                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) * 1.5;
             }
 
             List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end).ToList();
@@ -843,10 +915,10 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (monthqs.Any())
             {
-                Scrap = monthqs.Sum(p => p.ScrapCount) * product.OneOfWeight;
+                Scrap = monthqs.Sum(p => p.ScrapCount) * 1.5;
             }
 
-            MonthProductions = AllMonthProductions - Scrap;
+            MonthProductions = AllMonthProductions;
 
             QualityRate = (MonthProductions / AllMonthProductions) * 100;
 
@@ -862,7 +934,7 @@ namespace WebAPP_LIULI.Controllers
             double todayProduction = 0;
             if (todayws.Any())
             {
-                todayProduction = todayws.Sum(p => p.WarehousingCount);
+                todayProduction = todayws.Sum(p => p.WarehousingCount) * 1.5;
             }
 
             foreach (var productname in ProductNameList)
@@ -872,7 +944,7 @@ namespace WebAPP_LIULI.Controllers
                 tpr.ProductCount = 0;
                 if (todayws.Where(p => p.ProductName == productname).Any())
                 {
-                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * 1.5;
                 }
                 tpr.ProductRate = 0;
                 if (todayProduction != 0)
@@ -894,8 +966,11 @@ namespace WebAPP_LIULI.Controllers
                 double ProductCount = 0;
                 if (monthws.Where(p => p.WarehousingTeam == team).Any())
                 {
-                    ProductCount = monthws.Where(p => p.WarehousingTeam == team).Sum(p => p.WarehousingCount) * product.OneOfWeight;
+                    ProductCount = monthws.Where(p => p.WarehousingTeam == team).Sum(p => p.WarehousingCount) * 1.5;
                 }
+
+                tp.ProductCount = ProductCount;
+
                 tp.ProductRate = 0;
                 if (AllMonthProductions != 0)
                 {
@@ -905,12 +980,12 @@ namespace WebAPP_LIULI.Controllers
                 double teamScrap = 0;
                 if (monthqs.Where(p => p.CheckTeam == team).Any())
                 {
-                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount);
+                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount) * 1.5;
                 }
                 tp.ScrapRate = 0;
                 if(ProductCount != 0)
                 {
-                    tp.ScrapRate = (teamScrap / ProductCount) * 100;
+                    tp.ScrapRate = (teamScrap / (ProductCount + teamScrap)) * 100;
                 }
 
 
@@ -975,6 +1050,7 @@ namespace WebAPP_LIULI.Controllers
                 double d = 0;
 
                 cs.CustomerName = custom.CustomerName;
+                cs.CustomerCount = a;
                 cs.Rate = c;
                 cs.ScrapRate = d;
 
@@ -1060,13 +1136,13 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount);
+                Scrap = qs.Where(p => p.ProcessName == "客户").Sum(p => p.ScrapCount);
             }
 
             double ScrapRate = 0;
             if(AllorderCount !=0)
             {
-                ScrapRate = Scrap * product.OneOfWeight / AllorderCount * 100;
+                ScrapRate = Scrap * 1.5 / AllorderCount * 100;
             }
 
             List<Warehousing> allws = model.Warehousing.ToList();
@@ -1092,7 +1168,7 @@ namespace WebAPP_LIULI.Controllers
             double AllMonthProductions = 0;
             if (monthws.Any())
             {
-                AllMonthProductions = monthws.Sum(p => p.WarehousingCount);
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) *1.5;
             }
 
             List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend).ToList();
@@ -1100,12 +1176,12 @@ namespace WebAPP_LIULI.Controllers
             double MonthScrap = 0;
             if (monthqs.Any())
             {
-                MonthScrap = monthqs.Sum(p => p.ScrapCount);
+                MonthScrap = monthqs.Sum(p => p.ScrapCount) * 1.5;
             }
 
             if(AllMonthProductions != 0)
             {
-                MonthScrapRate = MonthScrap / AllMonthProductions *100;
+                MonthScrapRate = MonthScrap / (AllMonthProductions + MonthScrap) *100;
             }
 
             List<MonthProduction> mpList = new List<MonthProduction>();
@@ -1164,6 +1240,50 @@ namespace WebAPP_LIULI.Controllers
             ViewBag.msList = msList;
 
             return View();
+        }
+
+        public ActionResult MaterialDriverQuery(int? id)
+        {
+            List<Driver> drivers = model.MaterialDriver.ToList();
+            ViewBag.drivers = drivers;
+
+            List<MaterialOrder> mList = new List<MaterialOrder>();
+            if (id != null)
+                mList = model.MaterialOrder.Where(p => p.MaterialDriver.Id == id).OrderByDescending(p => p.IsComfirm).ToList();
+
+            ViewBag.DriverID = id;
+
+            return View(mList);
+        }
+
+        public string MaterialConfirm(int id)
+        {
+            MaterialOrder order = model.MaterialOrder.Where(p => p.Id == id).First();
+            order.IsComfirm = 1;
+            model.SaveChanges();
+            return "{\"data\": true }";
+        }
+
+        public ActionResult SendOrderDriverQuery(int? id)
+        {
+            List<Driver> drivers = model.MaterialDriver.ToList();
+            ViewBag.drivers = drivers;
+
+            List<SendOrder> mList = new List<SendOrder>();
+            if (id != null)
+                mList = model.SendOrder.Where(p => p.MaterialDriver.Id == id).OrderByDescending(p => p.IsComfirm).ToList();
+
+            ViewBag.DriverID = id;
+
+            return View(mList);
+        }
+
+        public string SendOrderConfirm(int id)
+        {
+            SendOrder order = model.SendOrder.Where(p => p.Id == id).First();
+            order.IsComfirm = 1;
+            model.SaveChanges();
+            return "{\"data\": true }";
         }
 
     }

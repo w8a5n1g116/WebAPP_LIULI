@@ -41,51 +41,78 @@
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">发货数量/吨</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="number" name="SendCount" value="@m.SendCount">
+                        <input class="form-control" type="number" name="SendCount" placeholder="吨" value="">
                     </div>
                 </div>
+                    <input type="hidden" name="OneOfTonPrice"  value="@ViewBag.OneOfTonPrice">
+
+                <dl class="row">
+                    <dt class="col-6">每吨运费</dt>
+                    <dd class="col-6">@ViewBag.OneOfTonPrice 元</dd>
+                </dl>
                 <dl class="row">
                     <dt class="col-6">司机姓名</dt>
-                    <dd id="Name" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.Name}</dd>
-                    <dt class="col-6">司机电话</dt>
-                    <dd id="PhoneNumber" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.PhoneNumber}</dd>
-                    <dt class="col-6">车牌号</dt>
-                    <dd id="CarNumber" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.CarNumber}</dd>
-                    <dt class="col-6">车型</dt>
-                    <dd id="CarType" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.CarType}</dd>
-                    <dt class="col-6">最大载重</dt>
-                    <dd id="MaxLoad" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.MaxLoad}</dd>
-                    <dt class="col-6">身份证号</dt>
-                    <dd id="PersonId" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.PersonId}</dd>
-                    <dt class="col-6">银行卡号</dt>
-                    <dd id="BankNumer" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.BankNumer}</dd>
-                    <dt class="col-6">开户行</dt>
-                    <dd id="BankName" class="col-6">@if (m.MaterialDriver != null)
-                    {@m.MaterialDriver.BankName}</dd>
-                </dl>
+                    <dd id="Name" class="col-6">
+                        @if (m.MaterialDriver != null)
+                        {@m.MaterialDriver.Name}
+                </dd>
+                <dt class="col-6">司机电话</dt>
+                <dd id="PhoneNumber" class="col-6">
+                    @if (m.MaterialDriver != null)
+                    {@m.MaterialDriver.PhoneNumber}
+            </dd>
+            <dt class="col-6">车牌号</dt>
+            <dd id="CarNumber" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.CarNumber}
+            </dd>
+            <dt class="col-6">车型</dt>
+            <dd id="CarType" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.CarType}
+            </dd>
+            <dt class="col-6">最大载重</dt>
+            <dd id="MaxLoad" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.MaxLoad}
+            </dd>
+            <dt class="col-6">身份证号</dt>
+            <dd id="PersonId" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.PersonId}
+            </dd>
+            <dt class="col-6">银行卡号</dt>
+            <dd id="BankNumer" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.BankNumer}
+            </dd>
+            <dt class="col-6">开户行</dt>
+            <dd id="BankName" class="col-6">
+                @if (m.MaterialDriver != null)
+                {@m.MaterialDriver.BankName}
+            </dd>
+            </dl>
 
-                <input hidden="hidden" type="text" name="SendDeterminePerson" value="@if (string.IsNullOrEmpty(m.SendDeterminePerson)) { @user.UserName } else { @m.SendDeterminePerson; }">
-                <input hidden="hidden" type="text" name="TaskId" value="@if (string.IsNullOrEmpty(m.TaskId)) { @("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss"))  } else { @m.TaskId; }">
+            <input hidden="hidden" type="text" name="SendDeterminePerson" value="@if (string.IsNullOrEmpty(m.SendDeterminePerson)) { @user.UserName } else { @m.SendDeterminePerson; }">
+            <input hidden="hidden" type="text" name="TaskId" value="@if (string.IsNullOrEmpty(m.TaskId)) { @("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss"))  } else { @m.TaskId; }">
 
-                <dl class="row p-t-10">
-                    <dt class="col-6">任务单号</dt>
-                    <dd class="col-6">@if (string.IsNullOrEmpty(m.TaskId)) { @("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss"))  } else { @m.TaskId; }</dd>
-                    <dt class="col-6">复核人</dt>
-                    <dd class="col-6">
-                        @if (string.IsNullOrEmpty(m.SendDeterminePerson)) {@user.UserName }
-                        else
-                        {@m.SendDeterminePerson;
-                    }
-                    </dd>
-                </dl>
-                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">提交</button>
+            <dl class="row p-t-10">
+                <dt class="col-6">任务单号</dt>
+                <dd class="col-6">@if (string.IsNullOrEmpty(m.TaskId))
+                {@("MaterialOrder_" + DateTime.Now.ToString("yyyyMMddHHmmss")) }
+            else
+            { @m.TaskId;
+        }</dd>
+                <dt class="col-6">复核人</dt>
+                <dd class="col-6">
+                    @if (string.IsNullOrEmpty(m.SendDeterminePerson))
+                    {@user.UserName }
+                else
+                {@m.SendDeterminePerson;
+            }
+                </dd>
+            </dl>
+            <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">提交</button>
             </form>
 
 

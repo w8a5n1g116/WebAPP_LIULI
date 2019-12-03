@@ -1,6 +1,7 @@
 ﻿@using WebAPP_LIULI.Models;
 @{
     User user = (User)Session["User"];
+    DateTime d = DateTime.Now;
 }
 
 <!-- Page-Title -->
@@ -20,35 +21,8 @@
         <div class="col-xl-3 col-md-6">
             <div class="card-box widget-user">
                 <div class="text-center">
-                    <h2 class="text-custom" data-plugin="counterup">100 吨</h2>
-                    <h5>本月产量</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="card-box widget-user">
-                <div class="text-center">
-                    <h2 class="text-warning" data-plugin="counterup">100 %</h2>
-                    <h5>合格率</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="card-box widget-user">
-                <div class="text-center">
-                    <h2 class="text-success" data-plugin="counterup">10000 元</h2>
-                    <h5>班组收入</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <div class="card-box widget-user">
-                <div class="text-center">
-                    <h2 class="text-danger" data-plugin="counterup">0 元</h2>
-                    <h5>奖罚</h5>
+                    <h2 class="text-custom" data-plugin="counterup">欢迎使用</h2>
+                    <h5>@d.ToString("yyyy年MM月dd日")</h5>
                 </div>
             </div>
         </div>

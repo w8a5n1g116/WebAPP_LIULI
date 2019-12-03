@@ -1,0 +1,40 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    BaseData m = Model;
+    if (m == null)
+    {
+        m = new BaseData();
+    }
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">基础数据</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box">
+            <form class="form-horizontal" role="form" action="/Home/BaseData" method="post">
+                <input hidden="hidden" type="text" name="Id" value="@m.Id">
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">原料每吨价格</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="OneOfTonPrice" placeholder="元" value="@m.OneOfTonPrice">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-block btn-xs btn-purple waves-effect waves-light">保存</button>
+            </form>
+        </div>
+    </div><!-- end col -->
+
+</div>
+<!-- end row -->

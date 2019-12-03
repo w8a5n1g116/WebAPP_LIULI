@@ -20,7 +20,7 @@
 
 <div class="row">
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">0元</h2>
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-warning" data-plugin="counterup">0元</h2>
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-success" data-plugin="counterup">0元</h2>
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-danger" data-plugin="counterup">0元</h2>
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">0元</h2>
@@ -65,16 +65,16 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-warning" data-plugin="counterup">@ViewBag.OrderPriceCount 元</h2>
+                <h2 class="text-warning" data-plugin="counterup">@((ViewBag.OrderPriceCount/10000).ToString("0")) 万元</h2>
                 <h5>总销售额</h5>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-custom" data-plugin="counterup">0元</h2>
@@ -83,16 +83,16 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-warning" data-plugin="counterup">@ViewBag.MonthOrderPriceCount 元</h2>
+                <h2 class="text-warning" data-plugin="counterup">@((ViewBag.MonthOrderPriceCount / 10000).ToString("0")) 万元</h2>
                 <h5>当月销售额</h5>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-success" data-plugin="counterup">0元</h2>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6  col-6">
         <div class="card-box widget-user">
             <div class="text-center">
                 <h2 class="text-danger" data-plugin="counterup">0元</h2>
@@ -136,8 +136,8 @@
                         </tr>
 
                         <tr>
-                            <td>@ViewBag.OrderPriceCount 元</td>
-                            <td>@ViewBag.DoneOrderPriceCount 元</td>
+                            <td>@((ViewBag.OrderPriceCount / 10000).ToString("0.00")) 万元</td>
+                            <td>@((ViewBag.DoneOrderPriceCount / 10000).ToString("0.00")) 万元</td>
                         </tr>
                     </tbody>
                 </table>

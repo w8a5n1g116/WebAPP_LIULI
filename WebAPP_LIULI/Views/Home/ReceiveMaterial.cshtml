@@ -31,7 +31,7 @@
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">收货数量/吨</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="number" name="ReceiveCount">
+                        <input class="form-control" type="number" name="ReceiveCount" value="@m.SendCount">
                     </div>
                 </div>
                 <dl class="row">
@@ -53,18 +53,26 @@
                     <dd class="col-6">@m.MaterialDriver.BankName</dd>
                 </dl>
 
+                <dl class="row">
+                    <dt class="col-6">每吨运费</dt>
+                    <dd class="col-6">@m.OneOfTonPrice 元</dd>
+                </dl>
+
                 <input hidden="hidden" type="text" name="ReceiveDeterminePerson" value="@if (string.IsNullOrEmpty(m.ReceiveDeterminePerson)) { @user.UserName } else { @m.ReceiveDeterminePerson; }">
 
                 <dl class="row p-t-10">
                     <dt class="col-6">任务单号</dt>
                     <dd class="col-6">@m.TaskId</dd>
                     <dt class="col-6">复核人</dt>
-                    <dd class="col-6">@if (string.IsNullOrEmpty(m.ReceiveDeterminePerson)) { @user.UserName}
+                    <dd class="col-6">
+                        @if (string.IsNullOrEmpty(m.ReceiveDeterminePerson))
+                        {@user.UserName}
                     else
                     {@m.ReceiveDeterminePerson;
-                }</dd>
-                </dl>
-                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">确定收货</button>
+                }
+                </dd>
+            </dl>
+            <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light" id="formsubmit">确定收货</button>
             </form>
 
 

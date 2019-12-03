@@ -21,6 +21,7 @@ namespace WebAPP_LIULI.Models
     public class TeamProduction
     {
         public string Team { get; set; }
+        public double ProductCount { get; set; }
         public double ProductRate { get; set; }
         public double ScrapRate { get; set; }
     }
@@ -28,6 +29,7 @@ namespace WebAPP_LIULI.Models
     public class CustomerSpread
     {
         public string CustomerName { get; set; }
+        public double CustomerCount { get; set; }
         public double Rate { get; set; }
         public double ScrapRate { get; set; }
     }

@@ -19,6 +19,9 @@
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="/Content/assets/plugins/morris/morris.css">
 
+    <!--Chartist Chart CSS -->
+    <link rel="stylesheet" href="/Content/assets/plugins/chartist/dist/chartist.min.css">
+
     <!-- Sweet Alert css -->
     <link href="/Content/assets/plugins/sweet-alert/sweetalert2.min.css" rel="stylesheet" type="text/css" />
 
@@ -31,6 +34,8 @@
     <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.7.13/dingtalk.open.js"></script>
 
     <script src="/Content/assets/js/modernizr.min.js"></script>
+
+    
 
     <!-- jQuery  -->
     <script src="/Content/assets/js/jquery.min.js"></script>
@@ -82,7 +87,8 @@
                         </li>
 
                         <li class="notification-list">
-                            <span class="nav-link   waves-light nav-user text-white" id="SysUserName">@if (user != null) {@user.UserName}</span>
+                            <span class="nav-link   waves-light nav-user text-white" id="SysUserName">@if (user != null)
+                            {@user.UserName}</span>
                         </li>
 
                     </ul>
@@ -124,6 +130,12 @@
                                 <a href="/Home/OrderList"><i class="mdi mdi-view-dashboard"></i> <span> 订单管理 </span> </a>
                             </li>
                             <li class="has-submenu">
+                                <a href="/Home/OrderQueryList"><i class="mdi mdi-view-dashboard"></i> <span> 订单查询 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/SendOrderDriverList"><i class="mdi mdi-view-dashboard"></i> <span> 成品发货 </span> </a>
+                            </li>
+                            <li class="has-submenu">
                                 <a href="/Home/ReceiveSendOrderList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客收货 </span> </a>
                             </li>
                             <li class="has-submenu">
@@ -156,6 +168,15 @@
                             <li class="has-submenu">
                                 <a href="/Home/MainReport"><i class="mdi mdi-view-dashboard"></i> <span> 总经理报表 </span> </a>
                             </li>
+                            <li class="has-submenu">
+                                <a href="/Home/MaterialDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 原料发货对账 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/SendOrderDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 成品发货对账 </span> </a>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="/Home/BaseData"><i class="mdi mdi-view-dashboard"></i> <span> 基础数据 </span> </a>
+                            </li>
                         }
 
 
@@ -179,14 +200,14 @@
     <!-- end wrapper -->
     <!-- Footer -->
     @*<footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center">
-                    2019 - 2025 © w8a5n1g116@126.com
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        2019 - 2025 © w8a5n1g116@126.com
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>*@
+        </footer>*@
     <!-- End Footer -->
     <!-- Sweet Alert Js  -->
     <script src="/Content/assets/plugins/sweet-alert/sweetalert2.min.js"></script>
@@ -203,6 +224,10 @@
     <script src="/Content/assets/plugins/morris/morris.min.js"></script>
     <script src="/Content/assets/plugins/raphael/raphael-min.js"></script>
 
+    <!--Chartist Chart-->
+    <script src="/Content/assets/plugins/chartist/dist/chartist.min.js"></script>
+    <script src="/Content/assets/plugins/chartist/dist/chartist-plugin-tooltip.min.js"></script>
+    
     <!-- Dashboard init -->
     <script src="/Content/assets/pages/jquery.dashboard.js"></script>
 

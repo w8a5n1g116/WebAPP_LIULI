@@ -19,7 +19,7 @@
 
     <div class="row mt-3">
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-6">
             <div class="card-box widget-user">
                 <div class="text-center">
                     <h2 class="text-custom" data-plugin="counterup">@ViewBag.LastProductions 吨</h2>
@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-3 col-md-3 col-6">
             <div class="card-box widget-user">
                 <div class="text-center">
                     <h2 class="text-warning" data-plugin="counterup">@ViewBag.QualityRate.ToString("0.00") %</h2>
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-6">
             <div class="card-box widget-user">
                 <div class="text-center">
                     <h2 class="text-success" data-plugin="counterup">@ViewBag.Income 元</h2>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-3 col-md-6 col-6">
             <div class="card-box widget-user">
                 <div class="text-center">
                     <h2 class="text-danger" data-plugin="counterup">@ViewBag.Punishment 元</h2>
@@ -88,19 +88,14 @@
             </div>
         </div>
 
-        <div class="col-xl-6">
-            <div class="card-box">                
+        
+
+        <div class="col-xl-6" >
+            <div class="card-box" style="height:600px">
 
                 <h4 class="header-title m-t-0 m-b-30">每日产量统计图</h4>
 
-                <div class="text-center">
-                    <ul class="list-inline chart-detail-list">
-                        <li class="list-inline-item">
-                            <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>产量</h5>
-                        </li>
-                    </ul>
-                </div>
-                <div id="morris-bar-example" style="height: 300px;"></div>
+                <div id="horizontal-bar-chart" class="ct-chart ct-golden-section"></div>
             </div>
         </div><!-- end col-->
 
@@ -126,30 +121,44 @@
     <script>
     $(document).ready(function () {
 
-        var $barData = [
-            @{
+        
+
+        var labels = [@{
                 foreach (EveryDayProducttion edp in edpList)
                 {
-                    <text>{y:'@edp.Name',a:@edp.Value}</text>
+                    <text>'@edp.Name'</text>
                     if (edpList.Last() != edp)
                     {
                         <text>,</text>
                     }
                 }
-            }
-        ];
+            }];
 
-        Morris.Bar({
-            element: 'morris-bar-example',
-            data: $barData,
-            xkey: 'y',
-            ykeys: ['a'],
-            labels: ['产量'],
-            hideHover: 'auto',
-            resize: true, //defaulted to true
-            gridLineColor: '#eeeeee',
-            barSizeRatio: 0.4,
-            barColors: [ '#5b69bc']
+        var series = [[@{
+                foreach (EveryDayProducttion edp in edpList)
+                {
+                    <text>@edp.Value</text>
+                    if (edpList.Last() != edp)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }]];
+
+        new Chartist.Bar('#horizontal-bar-chart', {
+          labels: labels,
+          series: series
+        }, {
+          seriesBarDistance: 10,
+          reverseData: true,
+                horizontalBars: true,
+                height: '500px',
+          axisY: {
+            offset: 50
+          },
+          plugins: [
+            Chartist.plugins.tooltip()
+          ]
         });
 
     });

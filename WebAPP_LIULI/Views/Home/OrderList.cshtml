@@ -19,8 +19,12 @@
         <div class="form-group form-inline">
             <label class="col-2 col-form-label">交货日期</label>
             <div class="col-5">
-                <input class="form-control" type="date" id="DeliveryTime" name="DeliveryTime" value="@ViewBag.time">
-                
+                <input class="form-control" type="date" id="DeliveryStartTime" name="DeliveryStartTime" placeholder="开始时间" value="">
+
+            </div>
+            <div class="col-5">
+                <input class="form-control" type="date" id="DeliveryEndTime" name="DeliveryEndTime" placeholder="结束时间" value="">
+
             </div>
             <div class="col-5">
                 <button id="queryButton" type="button" class="btn btn-primary btn-md waves-effect waves-light"><i class="md md-add"></i>查询</button>
@@ -56,6 +60,8 @@
                     <dd class="col-6">@m.Salesman</dd>
                     <dt class="col-6">订单日期</dt>
                     <dd class="col-6">@m.CreateTime</dd>
+                    <dt class="col-6">订单发货量</dt>
+                    <dd class="col-6">@m.DeliveryCount</dd>
                 </dl>
                 <a href="/Home/OrderInput?id=@m.Id" class="btn btn-block btn-xs btn-purple waves-effect waves-light">操作</a>
                 @if(m.OrderStatus == "已下单" || m.OrderStatus == "部分发货")
@@ -72,8 +78,9 @@
         $(document).ready(function () {
 
             $('#queryButton').click(function () {
-                var time = $('#DeliveryTime').val();
-                window.location = '/Home/OrderList?time=' + time;
+                var starttime = $('#DeliveryStartTime').val();
+                var endtime = $('#DeliveryEndTime').val();
+                window.location = '/Home/OrderList?starttime=' + starttime + '&endtime=' + endtime;
             })
         });
     </script>
