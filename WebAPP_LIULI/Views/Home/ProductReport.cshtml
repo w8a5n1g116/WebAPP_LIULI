@@ -1,6 +1,7 @@
 ﻿@using WebAPP_LIULI.Models;
 @{
     User user = (User)Session["User"];
+    List<OrderRepository> rsList = ViewBag.rsList;
 }
 
 <!-- Page-Title -->
@@ -20,8 +21,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
-                <h5>总订单数</h5>
+                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount </h2>
+                <h5>总订单数/吨</h5>
             </div>
         </div>
     </div>
@@ -29,8 +30,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-warning" data-plugin="counterup">@ViewBag.Respository 吨</h2>
-                <h5>库存吨位</h5>
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.Respository </h2>
+                <h5>库存吨位/吨</h5>
             </div>
         </div>
     </div>
@@ -38,8 +39,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-success" data-plugin="counterup">@ViewBag.MonthProductions 吨</h2>
-                <h5>本月产量</h5>
+                <h2 class="text-success" data-plugin="counterup">@ViewBag.MonthProductions </h2>
+                <h5>本月产量/吨</h5>
             </div>
         </div>
     </div>
@@ -47,8 +48,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-danger" data-plugin="counterup">@ViewBag.todayProduction 吨</h2>
-                <h5>今日产量</h5>
+                <h2 class="text-danger" data-plugin="counterup">@ViewBag.todayProduction </h2>
+                <h5>今日产量/吨</h5>
             </div>
         </div>
     </div>
@@ -130,13 +131,55 @@
         </div>
     </div>
 
+    <div class="col-xl-6">
+        <div class="card-box">
+
+            <h4 class="header-title m-t-0 m-b-30">产品未交付订单-库存对比图</h4>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li class="list-inline-item">
+                        <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>Series B</h5>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 style="color: #35b8e0;"><i class="fa fa-circle m-r-5"></i>Series C</h5>
+                    </li>
+                </ul>
+            </div>
+            <div id="morris-bar-example" style="height: 300px;"></div>
+        </div>
+    </div><!-- end col-->
 
 </div>
 <!-- end row -->
 
 <script>
     $(document).ready(function () {
-        
+        var $barData = [
+            @{
+                foreach (OrderRepository rs in rsList)
+                {
+                    <text>{y:'@rs.ProductName',a:@rs.OrderCount ,b:@rs.RepositoryCount}</text>
+                    if (rsList.Last() != rs)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example',
+            data: $barData,
+            xkey: 'y',
+            ykeys: ['a','b'],
+            labels: ['订单量','库存'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc','#35b8e0']
+        });
 
     });
 </script>

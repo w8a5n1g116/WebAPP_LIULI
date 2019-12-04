@@ -227,9 +227,10 @@
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
+        public double Name { get; set; }
+        public double AllocationRate { get; set; }
         public double OneOfTonPrice { get; set; }
+        public double MonitorMoney { get; set; }
     }
 
 }

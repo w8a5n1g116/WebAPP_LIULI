@@ -26,16 +26,16 @@
                 <input hidden="hidden" type="text" name="Id" value="@m.Id">
 
                 @*<div class="form-group row">
-                    <label class="col-md-2 col-form-label">选择司机</label>
-                    <div class="col-md-10">
-                        <select id="Driver" class="form-control" name="MaterialDriver.Id">
-                            @foreach (var c in ViewBag.drivers)
-                            {
-                                <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
-                            }
-                        </select>
-                    </div>
-                </div>*@
+            <label class="col-md-2 col-form-label">选择司机</label>
+            <div class="col-md-10">
+                <select id="Driver" class="form-control" name="MaterialDriver.Id">
+                    @foreach (var c in ViewBag.drivers)
+                    {
+                        <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
+                    }
+                </select>
+            </div>
+        </div>*@
 
                 <dl class="row">
                     <dt class="col-6">顾客名称</dt>
@@ -76,11 +76,15 @@
                     </div>
                 </div>
 
+                <dl class="row">
+                    <dt class="col-6">库存数量</dt>
+                    <dd id="Respository" class="col-6">@ViewBag.Respository</dd>
+                </dl>
 
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">发货数量/吨</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="number" name="SendCount" value="t">
+                        <input class="form-control" type="number" name="SendCount" value="t" id="SendCount">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -158,6 +162,19 @@
                     $('#Contact').html(o.Contact);
                     $('#ContactPhone').html(o.ContactPhone);
                 });
+            })
+
+            $('#SendCount').change(function () {
+                var sendCount = $("#SendCount").val();
+                var respository = $("Respository").val();
+
+                if (sendCount > respository) {
+                    swal(
+                        '发货量超过库存！',
+                        '请核对发货量！',
+                        'error'
+                    )
+                }
             })
         });
     </script>

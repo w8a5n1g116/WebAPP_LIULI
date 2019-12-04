@@ -35,10 +35,16 @@
                     <label class="col-md-2 col-form-label">用户权限</label>
                     <div class="col-md-10">
                         <select class="form-control" name="UserPermission">
-                            <option value="无" @if (m.UserPermission == "无") { <text> selected </text> }>无</option>
                             <option value="管理员" @if (m.UserPermission == "管理员") { <text> selected </text> }>管理员</option>
                             <option value="总经理" @if (m.UserPermission == "总经理") { <text> selected </text> }>总经理</option>
+                            <option value="销售副总" @if (m.UserPermission == "销售副总") { <text> selected </text> }>销售副总</option>
+                            <option value="生产副总" @if (m.UserPermission == "生产副总") { <text> selected </text> }>生产副总</option>
+                            <option value="厂长" @if (m.UserPermission == "厂长") { <text> selected </text> }>厂长</option>
+                            <option value="员工" @if (m.UserPermission == "员工") { <text> selected </text> }>员工</option>
                             <option value="班长" @if (m.UserPermission == "班长") { <text> selected </text> }>班长</option>
+                            <option value="库管员" @if (m.UserPermission == "库管员") { <text> selected </text> }>库管员</option>
+                            <option value="检验员" @if (m.UserPermission == "检验员") { <text> selected </text> }>检验员</option>
+                            <option value="基础管理" @if (m.UserPermission == "基础管理") { <text> selected </text> }>基础管理</option>
                         </select>
                     </div>
                 </div>

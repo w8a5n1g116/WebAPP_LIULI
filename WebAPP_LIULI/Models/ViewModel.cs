@@ -58,4 +58,11 @@ namespace WebAPP_LIULI.Models
         public string Name { get; set; }
         public double Value { get; set; }
     }
+
+    public class OrderRepository
+    {
+        public string ProductName { get; set; }
+        public double OrderCount { get; set; }
+        public double RepositoryCount { get; set; }
+    }
 }

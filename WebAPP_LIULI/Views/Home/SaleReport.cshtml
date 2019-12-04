@@ -22,8 +22,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount 吨</h2>
-                <h5>总订单数</h5>
+                <h2 class="text-custom" data-plugin="counterup">@ViewBag.AllorderCount </h2>
+                <h5>总订单数/吨</h5>
             </div>
         </div>
     </div>
@@ -31,8 +31,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-warning" data-plugin="counterup">@ViewBag.DoneOrderCount 吨</h2>
-                <h5>已交付数</h5>
+                <h2 class="text-warning" data-plugin="counterup">@ViewBag.DoneOrderCount </h2>
+                <h5>已交付数/吨</h5>
             </div>
         </div>
     </div>
@@ -40,8 +40,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-success" data-plugin="counterup">@ViewBag.ContinueOrderCount 吨</h2>
-                <h5>待交付数</h5>
+                <h2 class="text-success" data-plugin="counterup">@ViewBag.ContinueOrderCount </h2>
+                <h5>待交付数/吨</h5>
             </div>
         </div>
     </div>
@@ -49,8 +49,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-danger" data-plugin="counterup">@((ViewBag.OrderPriceCount / 10000).ToString("0")) 万元</h2>
-                <h5>总订单金额</h5>
+                <h2 class="text-danger" data-plugin="counterup">@((ViewBag.OrderPriceCount / 10000).ToString("0")) </h2>
+                <h5>总订单金额/万元</h5>
             </div>
         </div>
     </div>
@@ -58,8 +58,8 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-custom" data-plugin="counterup">0元</h2>
-                <h5>已收金额</h5>
+                <h2 class="text-custom" data-plugin="counterup">0</h2>
+                <h5>已收金额/元</h5>
             </div>
         </div>
     </div>
@@ -67,8 +67,62 @@
     <div class="col-xl-3 col-md-6 col-6">
         <div class="card-box widget-user">
             <div class="text-center">
-                <h2 class="text-warning" data-plugin="counterup">0元</h2>
-                <h5>应收金额</h5>
+                <h2 class="text-warning" data-plugin="counterup">0</h2>
+                <h5>应收金额/元</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box widget-user">
+            <div class="text-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">顾客</th>
+                            @*<th width="35%">订单金额</th>*@
+                            <th width="35%">占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CustomerPriceRate cpr in ViewBag.cprList)
+                        {
+                            @*<tr>
+                                <td>@cpr.CustomerName</td>
+                                <td>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</td>
+                                <td>
+                                    <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
+                                    <div class="progress progress-bar-primary-alt progress-sm m-b-20">
+                                        <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@cpr.Rate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @cpr.Rate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
+                                        </div><!-- /.progress-bar .progress-bar-danger -->
+                                    </div>
+                                </td>
+                            </tr>*@
+
+                            <tr>
+                                <td><h3>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</h3>@cpr.CustomerName</td>
+                                <td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@cpr.Rate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>
+                                @*<td>
+                                    <div class="widget-chart-box-1">
+                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                               data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
+                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                               data-thickness=".15" />
+                                    </div>
+                                </td>*@
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -99,13 +153,13 @@
                                     </div>
                                 </td>
                                 @*<td>
-                                    <div class="widget-chart-box-1">
-                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
-                                               data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
-                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
-                                               data-thickness=".15" />
-                                    </div>
-                                </td>*@
+                                        <div class="widget-chart-box-1">
+                                            <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                                   data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
+                                                   data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                                   data-thickness=".15" />
+                                        </div>
+                                    </td>*@
                             </tr>
                         }
 
@@ -117,39 +171,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6">
-        <div class="card-box widget-user">
-            <div class="text-center">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th width="30%">顾客</th>
-                            <th width="35%">订单金额</th>
-                            <th width="35%">占比</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (CustomerPriceRate cpr in ViewBag.cprList)
-                        {
-                            <tr>
-                                <td>@cpr.CustomerName</td>
-                                <td>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</td>
-                                <td>
-                                    <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
-                                    <div class="progress progress-bar-primary-alt progress-sm m-b-20">
-                                        <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@cpr.Rate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @cpr.Rate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
-                                        </div><!-- /.progress-bar .progress-bar-danger -->
-                                    </div>
-                                </td>
-                            </tr>
-                        }
 
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
     <div class="col-xl-6">
         <div class="card-box">

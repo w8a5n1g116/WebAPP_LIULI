@@ -43,7 +43,7 @@ namespace WebAPP_LIULI.Controllers
         {
             HttpClient _httpClient = new HttpClient();
 
-            HttpResponseMessage ret = _httpClient.GetAsync("https://oapi.dingtalk.com/gettoken?appkey=dinginkcscgychixztbs&appsecret=_G-kUrgJu9tRMsroW-uZ8IbZatd9_LHbogOGjYMOTF73_H4FD83s0PctU7_eDQ_c").Result;
+            HttpResponseMessage ret = _httpClient.GetAsync("https://oapi.dingtalk.com/gettoken?appkey=dingbf00i6u9uslk4vso&appsecret=FMYLKxLu17x1qJVFD15oPKK_aSk0E6WG7SGnFKGZn1_-qaW94yeAasG-ntagK1vO").Result;
 
             string retstring = ret.Content.ReadAsStringAsync().Result;
             JObject o = JObject.Parse(retstring);
@@ -504,7 +504,25 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult SendOrder(int? id)
         {
+            BaseData basedata = model.BaseData.First();
 
+            List<Warehousing> allws = model.Warehousing.ToList();
+            double WarehousingCount = 0;
+            if (allws.Any())
+            {
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * basedata.Name;
+            }
+
+            List<SendOrder> sendorders = model.SendOrder.ToList();
+            double sendCount = 0;
+            if (sendorders.Any())
+            {
+                sendCount = sendorders.Sum(p => p.SendCount);
+            }
+
+            double Respository = WarehousingCount - sendCount;
+
+            ViewBag.Respository = Respository;
 
             SendOrder m = model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
             if (m == null)
@@ -657,6 +675,8 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult TeamAllocation(string team)
         {
+            BaseData basedata = model.BaseData.First();
+
             if(string.IsNullOrEmpty(team))
             {
                 return RedirectToAction("DefalutReport");
@@ -681,7 +701,7 @@ namespace WebAPP_LIULI.Controllers
             double AllLastProductions = 0;
             if(ws.Any())
             {
-                AllLastProductions = ws.Sum(p => p.WarehousingCount) * 1.5;
+                AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
@@ -689,7 +709,7 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if(qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount) * 1.5 ;
+                Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name ;
             }
 
             LastProductions = AllLastProductions;
@@ -709,9 +729,9 @@ namespace WebAPP_LIULI.Controllers
             Income =  LastProductions * product.OneOfPrice + Punishment;
 
 
-            FixedAllocation = Income * 0.6;
+            FixedAllocation = Income * (1- basedata.AllocationRate);
 
-            AllocationCount = Income * 0.4 - 500;
+            AllocationCount = Income * basedata.AllocationRate - basedata.MonitorMoney;
 
             List<TeamAllocation> tas = new List<TeamAllocation>();
 
@@ -719,9 +739,9 @@ namespace WebAPP_LIULI.Controllers
             {
                 TeamAllocation ta = new TeamAllocation();
                 ta.UserName = u.UserName;
-                if(u.UserType == "班长")
+                if(u.UserPermission == "班长")
                 {
-                    ta.FixedAllocation = (FixedAllocation / users.Count) + 500;
+                    ta.FixedAllocation = (FixedAllocation / users.Count) + basedata.MonitorMoney;
                 }
                 else
                 {
@@ -759,6 +779,8 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult DefalutReport(string team)
         {
+            BaseData basedata = model.BaseData.First();
+
             double LastProductions = 0;
             double QualityRate = 0;
             double Income = 0;
@@ -774,7 +796,7 @@ namespace WebAPP_LIULI.Controllers
             double AllLastProductions = 0;
             if (ws.Any())
             {
-                AllLastProductions = ws.Sum(p => p.WarehousingCount) * 1.5;
+                AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
@@ -782,7 +804,7 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount) * 1.5;
+                Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
             LastProductions = AllLastProductions;
@@ -814,7 +836,7 @@ namespace WebAPP_LIULI.Controllers
             double todayProduction = 0;
             if(todayws.Any())
             {
-                todayProduction = todayws.Sum(p => p.WarehousingCount) * 1.5;
+                todayProduction = todayws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             foreach (var productname in ProductNameList)
@@ -824,7 +846,7 @@ namespace WebAPP_LIULI.Controllers
                 tpr.ProductCount = 0;
                 if (todayws.Where(p => p.ProductName == productname).Any())
                 {
-                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * 1.5;
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * basedata.Name;
                 }
                 tpr.ProductRate = 0;
                 if(todayProduction != 0)
@@ -853,7 +875,7 @@ namespace WebAPP_LIULI.Controllers
                 List<Warehousing> edpws = model.Warehousing.Where(p => p.WarehousingTime >= temptime && p.WarehousingTime <= tempendtime).ToList();
                 if(edpws.Any())
                 {
-                    edp.Value = edpws.Sum(p => p.WarehousingCount) * 1.5;
+                    edp.Value = edpws.Sum(p => p.WarehousingCount) * basedata.Name;
                 }
 
                 edpList.Add(edp);
@@ -871,6 +893,8 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult ProductReport()
         {
+            BaseData basedata = model.BaseData.First();
+
             Product product = model.Product.First();
 
             List<Order> orders = model.Order.ToList();
@@ -880,12 +904,16 @@ namespace WebAPP_LIULI.Controllers
                 AllorderCount = orders.Sum(p => p.ProductCount);
             }
 
+            
+
             List<Warehousing> allws = model.Warehousing.ToList();
             double WarehousingCount = 0;
             if(allws.Any())
             {
-                WarehousingCount = allws.Sum(p => p.WarehousingCount) * 1.5;
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
+
+            
 
             List<SendOrder> sendorders = model.SendOrder.ToList();
             double sendCount = 0;
@@ -895,6 +923,21 @@ namespace WebAPP_LIULI.Controllers
             }
 
             double Respository = WarehousingCount - sendCount;
+
+            List<OrderRepository> rsList = new List<OrderRepository>();
+            List<string> productNameList = orders.Select(p => product.ProductName).Distinct().ToList();
+
+            foreach(var productName in productNameList)
+            {
+                OrderRepository rs = new OrderRepository();
+                List<Order> temporders = orders.Where(p => p.ProductName == productName).ToList();
+
+                rs.ProductName = productName;
+                rs.OrderCount = temporders.Sum(p => p.ProductCount - p.DeliveryCount);
+                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.Order.ProductName == productName).Sum(p => p.SendCount);
+
+                rsList.Add(rs);
+            }
 
             double MonthProductions = 0;
             double QualityRate = 0;
@@ -907,7 +950,7 @@ namespace WebAPP_LIULI.Controllers
             double AllMonthProductions = 0;
             if (monthws.Any())
             {
-                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) * 1.5;
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end).ToList();
@@ -915,7 +958,7 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (monthqs.Any())
             {
-                Scrap = monthqs.Sum(p => p.ScrapCount) * 1.5;
+                Scrap = monthqs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
             MonthProductions = AllMonthProductions;
@@ -934,7 +977,7 @@ namespace WebAPP_LIULI.Controllers
             double todayProduction = 0;
             if (todayws.Any())
             {
-                todayProduction = todayws.Sum(p => p.WarehousingCount) * 1.5;
+                todayProduction = todayws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             foreach (var productname in ProductNameList)
@@ -944,7 +987,7 @@ namespace WebAPP_LIULI.Controllers
                 tpr.ProductCount = 0;
                 if (todayws.Where(p => p.ProductName == productname).Any())
                 {
-                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * 1.5;
+                    tpr.ProductCount = todayws.Where(p => p.ProductName == productname).Sum(p => p.WarehousingCount) * basedata.Name;
                 }
                 tpr.ProductRate = 0;
                 if (todayProduction != 0)
@@ -966,7 +1009,7 @@ namespace WebAPP_LIULI.Controllers
                 double ProductCount = 0;
                 if (monthws.Where(p => p.WarehousingTeam == team).Any())
                 {
-                    ProductCount = monthws.Where(p => p.WarehousingTeam == team).Sum(p => p.WarehousingCount) * 1.5;
+                    ProductCount = monthws.Where(p => p.WarehousingTeam == team).Sum(p => p.WarehousingCount) * basedata.Name;
                 }
 
                 tp.ProductCount = ProductCount;
@@ -980,7 +1023,7 @@ namespace WebAPP_LIULI.Controllers
                 double teamScrap = 0;
                 if (monthqs.Where(p => p.CheckTeam == team).Any())
                 {
-                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount) * 1.5;
+                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount) * basedata.Name;
                 }
                 tp.ScrapRate = 0;
                 if(ProductCount != 0)
@@ -999,6 +1042,7 @@ namespace WebAPP_LIULI.Controllers
 
             ViewBag.tprList = tprList;
             ViewBag.tpList = tpList;
+            ViewBag.rsList = rsList;
 
             return View();
         }
@@ -1101,6 +1145,8 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult MainReport()
         {
+            BaseData basedata = model.BaseData.First();
+
             Product product = model.Product.First();
 
             List<Order> orders = model.Order.ToList();
@@ -1142,14 +1188,14 @@ namespace WebAPP_LIULI.Controllers
             double ScrapRate = 0;
             if(AllorderCount !=0)
             {
-                ScrapRate = Scrap * 1.5 / AllorderCount * 100;
+                ScrapRate = Scrap * basedata.Name / AllorderCount * 100;
             }
 
             List<Warehousing> allws = model.Warehousing.ToList();
             double WarehousingCount = 0;
             if (allws.Any())
             {
-                WarehousingCount = allws.Sum(p => p.WarehousingCount) * 1.5;
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<SendOrder> sendorders = model.SendOrder.ToList();
@@ -1168,7 +1214,7 @@ namespace WebAPP_LIULI.Controllers
             double AllMonthProductions = 0;
             if (monthws.Any())
             {
-                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) *1.5;
+                AllMonthProductions = monthws.Sum(p => p.WarehousingCount) *basedata.Name;
             }
 
             List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend).ToList();
@@ -1176,7 +1222,7 @@ namespace WebAPP_LIULI.Controllers
             double MonthScrap = 0;
             if (monthqs.Any())
             {
-                MonthScrap = monthqs.Sum(p => p.ScrapCount) * 1.5;
+                MonthScrap = monthqs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
             if(AllMonthProductions != 0)
