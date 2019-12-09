@@ -40,11 +40,16 @@
                             <option value="销售副总" @if (m.UserPermission == "销售副总") { <text> selected </text> }>销售副总</option>
                             <option value="生产副总" @if (m.UserPermission == "生产副总") { <text> selected </text> }>生产副总</option>
                             <option value="厂长" @if (m.UserPermission == "厂长") { <text> selected </text> }>厂长</option>
+                            <option value="副厂长" @if (m.UserPermission == "副厂长") { <text> selected </text> }>副厂长</option>
                             <option value="员工" @if (m.UserPermission == "员工") { <text> selected </text> }>员工</option>
                             <option value="班长" @if (m.UserPermission == "班长") { <text> selected </text> }>班长</option>
+                            <option value="物流业务员" @if (m.UserPermission == "物流业务员") { <text> selected </text> }>物流业务员</option>
+                            <option value="销售业务员" @if (m.UserPermission == "销售业务员") { <text> selected </text> }>销售业务员</option>
                             <option value="库管员" @if (m.UserPermission == "库管员") { <text> selected </text> }>库管员</option>
                             <option value="检验员" @if (m.UserPermission == "检验员") { <text> selected </text> }>检验员</option>
                             <option value="基础管理" @if (m.UserPermission == "基础管理") { <text> selected </text> }>基础管理</option>
+
+
                         </select>
                     </div>
                 </div>

@@ -218,6 +218,14 @@
     <Compile Include="Migrations\201912030809356_init17.Designer.cs">
       <DependentUpon>201912030809356_init17.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912051611262_init18.cs" />
+    <Compile Include="Migrations\201912051611262_init18.Designer.cs">
+      <DependentUpon>201912051611262_init18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912060643591_init19.cs" />
+    <Compile Include="Migrations\201912060643591_init19.Designer.cs">
+      <DependentUpon>201912060643591_init19.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
@@ -1505,6 +1513,12 @@
     <Content Include="Views\Home\SendOrderDriverList.cshtml" />
     <Content Include="Views\Home\MaterialDriverQuery.cshtml" />
     <Content Include="Views\Home\SendOrderDriverQuery.cshtml" />
+    <Content Include="Views\Home\WarehousingConfirmList.cshtml" />
+    <Content Include="Views\Home\WarehousingConfirm.cshtml" />
+    <Content Include="Views\Home\HalfQualityInspection.cshtml" />
+    <Content Include="Views\Home\HalfWarehousingInspection.cshtml" />
+    <Content Include="Views\Home\HalfWarehousingConfirm.cshtml" />
+    <Content Include="Views\Home\HalfWarehousingConfirmList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201911211610453_init.resx">
@@ -1560,6 +1574,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912030809356_init17.resx">
       <DependentUpon>201912030809356_init17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912051611262_init18.resx">
+      <DependentUpon>201912051611262_init18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912060643591_init19.resx">
+      <DependentUpon>201912060643591_init19.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

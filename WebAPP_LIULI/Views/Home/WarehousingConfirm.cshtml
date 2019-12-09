@@ -1,0 +1,136 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<Warehousing> m = Model;
+    if (m == null)
+    {
+        m = new List<Warehousing>();
+    }
+    User user = (User)Session["User"];
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">入库确定</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form">
+
+                <input hidden="hidden" type="text" name="WarehousingTeam" id="WarehousingTeam" value="@user.UserTeam">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="30%">产品名称</th>
+                            <th width="25%">交检数</th>
+                            <th width="20%">吨数</th>
+                            <th width="25%">确定数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in m)
+                        {
+                            <tr>
+                                <td>@c.ProductName<input hidden="hidden" type="text" name="Id" value="@c.Id"></td>
+                                <td>@c.InspectionCount 袋</td>
+                                <td>@(c.InspectionCount*1.5) 吨<input hidden="hidden" type="text" name="ConfirmName" value="@user.UserName"></td>
+                                <td width="30%"><input class="form-control" type="number" name="InspectionCount" placeholder="袋" value="@c.InspectionCount"></td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">备注</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" name="Remarks" id="Remarks" rows="2">@m.First().Remarks</textarea>
+                    </div>
+                </div>
+
+                <dl class="row p-t-10">
+                    <dt class="col-6">确定人</dt>
+                    <dd class="col-6">@user.UserName</dd>
+                </dl>
+
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light mt-2" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    var warehousings = new Array();
+                    var Remarks = $('#Remarks').val();
+                    $.each($('tbody').children('tr'), function (i, val) {
+                        var Id = $($(val).find('input[name="Id"]')[0]).val();
+                        var ConfirmName = $($(val).find('input[name="ConfirmName"]')[0]).val();
+                        var InspectionCount = $($(val).find('input[name="InspectionCount"]')[0]).val();
+                        var postdata =
+                        {
+                            Id:Id,
+                            ConfirmName: ConfirmName,
+                            Remarks: Remarks,
+                            InspectionCount:InspectionCount
+                        };
+
+                        warehousings.push(postdata);
+                    });
+
+                    $.post('/Home/WarehousingConfirm', { warehousings }, function (data) {
+                        var jsonObject = JSON.parse(data);
+                        if (jsonObject.success == true) {
+                            swal(
+                                '提交成功！',
+                                '您已成功提交！',
+                                'success'
+                            )
+                            window.location = '/Home/WarehousingConfirmList';
+                        }
+                        else {
+                            swal(
+                                '提交失败！',
+                                '可能因为网络原因提交失败，请重试！',
+                                'error'
+                            )
+                        }
+
+                    });
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

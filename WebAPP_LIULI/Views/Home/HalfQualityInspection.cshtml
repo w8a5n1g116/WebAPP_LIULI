@@ -1,0 +1,93 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    QualityInspection m = Model;
+    if (m == null)
+    {
+        m = new QualityInspection();
+    }
+
+    User user = (User)Session["User"];
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">半成品质检</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/HalfQualityInspection" method="post">
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择工序</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="ProcessName">
+                            <option>水洗</option>
+                            <option>分筛</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type="text" hidden="hidden" name="UnqualifiedReson" id="UnqualifiedReson" />
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">报废数量/吨</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="ScrapCount" value="1">
+                    </div>
+                </div>                
+
+                <input hidden="hidden" type="text" name="CheckUserName" value="@user.UserName">
+
+                <button type="button" class="btn btn-block btn-xs btn-purple waves-effect waves-light mt-2" id="formsubmit">提交</button>
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#formsubmit').click(function () {
+                swal({
+                    title: '确定提交么？',
+                    text: "请确定好填写内容正确无误后提交！",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4fa7f3',
+                    cancelButtonColor: '#d57171',
+                    confirmButtonText: '提交',
+                    cancelButtonText: '取消'
+                }).then(function () {
+                    swal(
+                        '提交成功！',
+                        '您已成功提交！',
+                        'success'
+                    )
+                   
+                    $('#FormBody').submit();
+                }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                        swal(
+                            '已取消',
+                            '请核对信息后再次提交！',
+                            'error'
+                        )
+                    }
+                })
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

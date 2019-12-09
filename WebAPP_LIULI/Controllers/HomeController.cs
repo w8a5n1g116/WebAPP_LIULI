@@ -134,7 +134,7 @@ namespace WebAPP_LIULI.Controllers
         public ActionResult WarehousingInspectionList()
         {
             List<List<Warehousing>> models = new List<List<Warehousing>>();
-            List<DateTime?> times = model.Warehousing.Where(p => p.WarehousingTime == null).Select(p => p.InspectionTime).Distinct().ToList();
+            List<DateTime?> times = model.Warehousing.Where(p => p.WarehousingTime == null && p.IsConfirm == 1).Select(p => p.InspectionTime).Distinct().ToList();
             foreach (var t in times)
             {
                 var m = model.Warehousing.Where(p =>
@@ -212,10 +212,149 @@ namespace WebAPP_LIULI.Controllers
             return "{\"success\":true}";
         }
 
+        public ActionResult WarehousingConfirmList()
+        {
+            List<List<Warehousing>> models = new List<List<Warehousing>>();
+            List<DateTime?> times = model.Warehousing.Where(p => p.WarehousingTime == null && p.IsConfirm == 0).Select(p => p.InspectionTime).Distinct().ToList();
+            foreach (var t in times)
+            {
+                var m = model.Warehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second //&&
+                //p.InspectionTime.Value.Millisecond == t.Value.Millisecond
+                ).ToList();
+                models.Add(m);
+            }
+            return View(models);
+        }
+        public ActionResult WarehousingConfirm(int id)
+        {
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+
+            DateTime? t = model.Warehousing.Where(p => p.Id == id).First().InspectionTime;
+
+            List<Warehousing> modesls = model.Warehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second
+                ).ToList();
+
+            return View(modesls);
+        }
+
+        [HttpPost]
+        public string WarehousingConfirm(List<Warehousing> warehousings)
+        {
+            var WarehousingTime = DateTime.Now;
+            foreach (var w in warehousings)
+            {
+                var _w = model.Warehousing.Where(p => p.Id == w.Id).First();
+                _w.InspectionCount = w.InspectionCount;
+                _w.ConfirmName = w.ConfirmName;
+                _w.Remarks = w.Remarks;
+                _w.IsConfirm = 1;
+            }
+
+            model.SaveChanges();
+
+            return "{\"success\":true}";
+        }
+
+        public ActionResult HalfWarehousingInspection()
+        {
+            List<Product> products = model.Product.ToList();
+            ViewBag.products = products;
+            return View();
+        }
+
+
+        [HttpPost]
+        public string HalfWarehousingInspection(List<HalfWarehousing> warehousings)
+        {
+            var CreateTime = DateTime.Now;
+            foreach (var w in warehousings)
+            {
+                w.CreateTime = CreateTime;
+                w.InspectionTime = CreateTime;
+                if (w.InspectionCount != 0)
+                    model.HalfWarehousing.Add(w);
+            }
+            model.SaveChanges();
+            return "{\"success\":true}";
+        }
+
+        public ActionResult HalfWarehousingConfirmList()
+        {
+            List<List<HalfWarehousing>> models = new List<List<HalfWarehousing>>();
+            List<DateTime?> times = model.HalfWarehousing.Where(p => p.HalfWarehousingTime == null && p.IsConfirm == 0).Select(p => p.InspectionTime).Distinct().ToList();
+            foreach (var t in times)
+            {
+                var m = model.HalfWarehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second //&&
+                //p.InspectionTime.Value.Millisecond == t.Value.Millisecond
+                ).ToList();
+                models.Add(m);
+            }
+            return View(models);
+        }
+        public ActionResult HalfWarehousingConfirm(int id)
+        {
+            List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
+            ViewBag.teams = teams;
+
+            DateTime? t = model.HalfWarehousing.Where(p => p.Id == id).First().InspectionTime;
+
+            List<HalfWarehousing> modesls = model.HalfWarehousing.Where(p =>
+                p.InspectionTime.Value.Year == t.Value.Year &&
+                p.InspectionTime.Value.Month == t.Value.Month &&
+                p.InspectionTime.Value.Day == t.Value.Day &&
+                p.InspectionTime.Value.Hour == t.Value.Hour &&
+                p.InspectionTime.Value.Minute == t.Value.Minute &&
+                p.InspectionTime.Value.Second == t.Value.Second
+                ).ToList();
+
+            return View(modesls);
+        }
+
+        [HttpPost]
+        public string HalfWarehousingConfirm(List<HalfWarehousing> warehousings)
+        {
+            var WarehousingTime = DateTime.Now;
+            foreach (var w in warehousings)
+            {
+                var _w = model.HalfWarehousing.Where(p => p.Id == w.Id).First();
+                _w.InspectionCount = w.InspectionCount;
+                _w.ConfirmName = w.ConfirmName;
+                _w.Remarks = w.Remarks;
+                _w.IsConfirm = 1;
+            }
+
+            model.SaveChanges();
+
+            return "{\"success\":true}";
+        }
+
         public ActionResult QualityInspection()
         {
             List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
             ViewBag.teams = teams;
+
+            List<Product> products = model.Product.ToList();
+            ViewBag.products = products;
+
             return View();
         }
 
@@ -232,6 +371,25 @@ namespace WebAPP_LIULI.Controllers
 
             List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
             ViewBag.teams = teams;
+            List<Product> products = model.Product.ToList();
+            ViewBag.products = products;
+
+            return View();
+        }
+
+        public ActionResult HalfQualityInspection()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult HalfQualityInspection(HalfQualityInspection m)
+        {
+            m.CreateTime = DateTime.Now;
+            m.CheckResult = "不合格";
+
+            model.HalfQualityInspection.Add(m);
+            model.SaveChanges();
 
             return View();
         }
@@ -799,7 +957,7 @@ namespace WebAPP_LIULI.Controllers
                 AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
-            List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
+            List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team && p.CheckResult == "不合格").ToList();
 
             double Scrap = 0;
             if (qs.Any())
@@ -809,7 +967,7 @@ namespace WebAPP_LIULI.Controllers
 
             LastProductions = AllLastProductions;
 
-            QualityRate = (LastProductions / (LastProductions + Scrap)) * 100;
+            QualityRate = (1- (Scrap /LastProductions)) * 100;
 
             
             string dateString = DateTime.Now.ToString("yyyy-MM");
@@ -940,7 +1098,6 @@ namespace WebAPP_LIULI.Controllers
             }
 
             double MonthProductions = 0;
-            double QualityRate = 0;
 
             DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             DateTime end = start.AddMonths(1);
@@ -962,8 +1119,6 @@ namespace WebAPP_LIULI.Controllers
             }
 
             MonthProductions = AllMonthProductions;
-
-            QualityRate = (MonthProductions / AllMonthProductions) * 100;
 
             //
             List<TodayProductRate> tprList = new List<TodayProductRate>();
@@ -1023,12 +1178,12 @@ namespace WebAPP_LIULI.Controllers
                 double teamScrap = 0;
                 if (monthqs.Where(p => p.CheckTeam == team).Any())
                 {
-                    teamScrap = monthqs.Where(p => p.CheckTeam == team).Sum(p => p.ScrapCount) * basedata.Name;
+                    teamScrap = monthqs.Where(p => p.CheckTeam == team && p.CheckResult == "不合格").Sum(p => p.ScrapCount) * basedata.Name;
                 }
                 tp.ScrapRate = 0;
                 if(ProductCount != 0)
                 {
-                    tp.ScrapRate = (teamScrap / (ProductCount + teamScrap)) * 100;
+                    tp.ScrapRate = (teamScrap / ProductCount) * 100;
                 }
 
 
@@ -1182,7 +1337,7 @@ namespace WebAPP_LIULI.Controllers
             double Scrap = 0;
             if (qs.Any())
             {
-                Scrap = qs.Where(p => p.ProcessName == "客户").Sum(p => p.ScrapCount);
+                Scrap = qs.Where(p => p.ProcessName == "客户" && p.CheckResult == "不合格").Sum(p => p.ScrapCount);
             }
 
             double ScrapRate = 0;
@@ -1217,7 +1372,7 @@ namespace WebAPP_LIULI.Controllers
                 AllMonthProductions = monthws.Sum(p => p.WarehousingCount) *basedata.Name;
             }
 
-            List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend).ToList();
+            List<QualityInspection> monthqs = model.QualityInspection.Where(p => p.CreateTime >= monthstart && p.CreateTime <= monthend && p.CheckResult == "不合格").ToList();
 
             double MonthScrap = 0;
             if (monthqs.Any())
@@ -1227,7 +1382,7 @@ namespace WebAPP_LIULI.Controllers
 
             if(AllMonthProductions != 0)
             {
-                MonthScrapRate = MonthScrap / (AllMonthProductions + MonthScrap) *100;
+                MonthScrapRate = MonthScrap / AllMonthProductions *100;
             }
 
             List<MonthProduction> mpList = new List<MonthProduction>();

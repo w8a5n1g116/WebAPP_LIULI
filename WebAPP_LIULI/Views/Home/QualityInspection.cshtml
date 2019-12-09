@@ -38,6 +38,19 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择产品</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="ProductName">
+                            @foreach (var c in ViewBag.products)
+                            {
+                                <option value="@c.ProductName">@c.ProductName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">选择工序</label>
                     <div class="col-md-10">

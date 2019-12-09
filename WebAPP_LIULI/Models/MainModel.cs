@@ -35,6 +35,8 @@
         public virtual DbSet<TeamAllocation> TeamAllocation { get; set; }
         public virtual DbSet<RewardPunishment> RewardPunishment { get; set; }
         public virtual DbSet<BaseData> BaseData { get; set; }
+        public virtual DbSet<HalfQualityInspection> HalfQualityInspection { get; set; }
+        public virtual DbSet<HalfWarehousing> HalfWarehousing { get; set; }
 
     }
 
@@ -104,6 +106,22 @@
         public string Remarks { get; set; }
         public string CheckUserName { get; set; }
         public DateTime CreateTime { get; set; }
+        public string ProductName { get; set; }
+
+    }
+
+    public class HalfQualityInspection
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public string ProcessName { get; set; }
+        public double ScrapCount { get; set; }
+        public string CheckTeam { get; set; }
+        public string CheckResult { get; set; }
+        public string UnqualifiedReson { get; set; }
+        public string Remarks { get; set; }
+        public string CheckUserName { get; set; }
+        public DateTime CreateTime { get; set; }
 
     }
 
@@ -121,6 +139,27 @@
         public DateTime? WarehousingTime { get; set; }
         public string Remarks { get; set; }
         public DateTime CreateTime { get; set; }
+        public int IsConfirm { get; set; }
+        public string ConfirmName { get; set; }
+
+    }
+
+    public class HalfWarehousing
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public string ProductName { get; set; }
+        public double InspectionCount { get; set; }
+        public string InspectionUserName { get; set; }
+        public DateTime? InspectionTime { get; set; }
+        public double HalfWarehousingCount { get; set; }
+        public string HalfWarehousingName { get; set; }
+        public string HalfWarehousingTeam { get; set; }
+        public DateTime? HalfWarehousingTime { get; set; }
+        public string Remarks { get; set; }
+        public DateTime CreateTime { get; set; }
+        public int IsConfirm { get; set; }
+        public string ConfirmName { get; set; }
 
     }
 

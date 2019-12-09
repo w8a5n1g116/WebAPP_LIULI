@@ -123,7 +123,19 @@
                                     <a href="/Home/QualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 过程质检 </span> </a>
                                 </li>
                                 <li class="has-submenu">
+                                    <a href="/Home/HalfQualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 半成品质检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/HalfWarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 半成品交检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/HalfWarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 半成品确定 </span> </a>
+                                </li>
+                                <li class="has-submenu">
                                     <a href="/Home/WarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 入库交检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/WarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 入库确定 </span> </a>
                                 </li>
                                 <li class="has-submenu">
                                     <a href="/Home/WarehousingInspectionList"><i class="mdi mdi-view-dashboard"></i> <span> 入库验收 </span> </a>
@@ -201,6 +213,15 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
+                                    <a href="/Home/OrderList"><i class="mdi mdi-view-dashboard"></i> <span> 订单管理 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/OrderQueryList"><i class="mdi mdi-view-dashboard"></i> <span> 订单查询 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
+                                </li>
+                                <li class="has-submenu">
                                     <a href="/Home/SaleReport"><i class="mdi mdi-view-dashboard"></i> <span> 销售报表 </span> </a>
                                 </li>
                             }
@@ -222,6 +243,15 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
+                                    <a href="/Home/ProductReport"><i class="mdi mdi-view-dashboard"></i> <span> 生产报表 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/HalfWarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 半成品确定 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/WarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 入库确定 </span> </a>
+                                </li>
+                                <li class="has-submenu">
                                     <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
                                 </li>
                             }
@@ -230,6 +260,12 @@
                                 <li class="has-submenu">
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/HalfWarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 半成品交检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/WarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 入库交检 </span> </a>
+                                </li>
                             }
                             else if (user.UserPermission == "班长")
                             {
@@ -237,10 +273,13 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/TeamAllocation?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 经营分配 </span> </a>
+                                    <a href="/Home/HalfWarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 半成品交检 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
+                                    <a href="/Home/WarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 入库交检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/TeamAllocation?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 经营分配 </span> </a>
                                 </li>
                             }
                             else if (user.UserPermission == "库管员")
@@ -249,16 +288,7 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/ReceiveMaterialList"><i class="mdi mdi-view-dashboard"></i> <span> 原料收货 </span> </a>
-                                </li>
-                                <li class="has-submenu">
                                     <a href="/Home/WarehousingInspectionList"><i class="mdi mdi-view-dashboard"></i> <span> 入库验收 </span> </a>
-                                </li>
-                                <li class="has-submenu">
-                                    <a href="/Home/MaterialDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 原料发货对账 </span> </a>
-                                </li>
-                                <li class="has-submenu">
-                                    <a href="/Home/SendOrderDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 成品发货对账 </span> </a>
                                 </li>
                             }
                             else if (user.UserPermission == "检验员")
@@ -267,10 +297,13 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/QualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 过程质检 </span> </a>
+                                    <a href="/Home/ReceiveMaterialList"><i class="mdi mdi-view-dashboard"></i> <span> 原料收货 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/WarehousingInspection"><i class="mdi mdi-view-dashboard"></i> <span> 入库交检 </span> </a>
+                                    <a href="/Home/HalfQualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 半成品质检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/QualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 过程质检 </span> </a>
                                 </li>
                             }
                             else if (user.UserPermission == "基础管理")
@@ -279,19 +312,73 @@
                                     <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
                                 </li>
                                 <li class="has-submenu">
-                                    <a href="/Home/UserList"><i class="mdi mdi-view-dashboard"></i> <span> 用户管理 </span> </a>
-                                </li>
-                                <li class="has-submenu">
-                                    <a href="/Home/DriverList"><i class="mdi mdi-view-dashboard"></i> <span> 司机管理 </span> </a>
-                                </li>
-                                <li class="has-submenu">
-                                    <a href="/Home/CustomerList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客管理 </span> </a>
+                                    <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
                                 </li>
                                 <li class="has-submenu">
                                     <a href="/Home/ProductList"><i class="mdi mdi-view-dashboard"></i> <span> 产品管理 </span> </a>
                                 </li>
                                 <li class="has-submenu">
                                     <a href="/Home/BaseData"><i class="mdi mdi-view-dashboard"></i> <span> 基础数据 </span> </a>
+                                </li>
+                            }
+                            else if (user.UserPermission == "物流业务员")
+                            {
+                                <li class="has-submenu">
+                                    <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/SendMaterial"><i class="mdi mdi-view-dashboard"></i> <span> 原料发货 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/SendOrderDriverList"><i class="mdi mdi-view-dashboard"></i> <span> 成品发货 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/MaterialDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 原料发货对账 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/SendOrderDriverQuery"><i class="mdi mdi-view-dashboard"></i> <span> 成品发货对账 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/DriverList"><i class="mdi mdi-view-dashboard"></i> <span> 司机管理 </span> </a>
+                                </li>
+                            }
+                            else if (user.UserPermission == "销售业务员")
+                            {
+                                <li class="has-submenu">
+                                    <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/QualityInspection"><i class="mdi mdi-view-dashboard"></i> <span> 过程质检 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/OrderList"><i class="mdi mdi-view-dashboard"></i> <span> 订单管理 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/OrderQueryList"><i class="mdi mdi-view-dashboard"></i> <span> 订单查询 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/ReceiveSendOrderList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客收货 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/CustomerList"><i class="mdi mdi-view-dashboard"></i> <span> 顾客管理 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/SaleReport"><i class="mdi mdi-view-dashboard"></i> <span> 销售报表 </span> </a>
+                                </li>
+                            }
+                            else if (user.UserPermission == "副厂长")
+                            {
+                                <li class="has-submenu">
+                                    <a href="/Home/DefalutReport?team=@user.UserTeam"><i class="mdi mdi-view-dashboard"></i> <span> 员工报表 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/HalfWarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 半成品确定 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/WarehousingConfirmList"><i class="mdi mdi-view-dashboard"></i> <span> 入库确定 </span> </a>
+                                </li>
+                                <li class="has-submenu">
+                                    <a href="/Home/RewardPunishmentList"><i class="mdi mdi-view-dashboard"></i> <span> 奖罚管理 </span> </a>
                                 </li>
                             }
                         }
