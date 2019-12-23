@@ -30,9 +30,8 @@
                     <thead>
                         <tr>
                             <th width="30%">产品名称</th>
-                            <th width="25%">交检数</th>
-                            <th width="20%">吨数</th>
-                            <th width="25%">确定数</th>
+                            <th width="35%">交检数/吨</th>
+                            <th width="35%">确定数/吨</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,9 +39,8 @@
                         {
                             <tr>
                                 <td>@c.ProductName<input hidden="hidden" type="text" name="Id" value="@c.Id"></td>
-                                <td>@c.InspectionCount 袋</td>
-                                <td>@(c.InspectionCount*1.5) 吨<input hidden="hidden" type="text" name="ConfirmName" value="@user.UserName"></td>
-                                <td width="30%"><input class="form-control" type="number" name="InspectionCount" placeholder="袋" value="@c.InspectionCount"></td>
+                                <td>@c.InspectionCount 吨</td>
+                                <td width="35%"><input class="form-control" type="number" name="InspectionCount" value="@c.InspectionCount"><input hidden="hidden" type="text" name="ConfirmName" value="@user.UserName"></td>
                             </tr>
                         }
 

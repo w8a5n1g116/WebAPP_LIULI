@@ -28,21 +28,15 @@
                         <tr>
                             @*<th></th>*@
                             <th width="30%">产品名称</th>
-                            <th width="40%">交检数量</th>
-                            <th width="30%">吨数</th>
+                            <th width="40%">交检数量/吨</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var c in ViewBag.products)
-                        {
-                            <tr>
-                                @*<th scope="row">@(ViewBag.products.IndexOf(c)+1)</th>*@
-                                <td>@c.ProductName<input hidden="hidden" name="ProductName" value="@c.ProductName"></td>
-                                <td><input class="form-control" type="number" name="InspectionCount" placeholder="袋"><input hidden="hidden" type="text" name="InspectionUserName" value="@if (string.IsNullOrEmpty(m.InspectionUserName)) {@user.UserName  } else { @m.InspectionUserName; }"></td>
-                                <td>0吨</td>
-                            </tr>
-                        }
-
+                        <tr>
+                            @*<th scope="row">@(ViewBag.products.IndexOf(c)+1)</th>*@
+                            <td>半成品<input hidden="hidden" name="ProductName" value="半成品"></td>
+                            <td><input class="form-control" type="number" name="InspectionCount"><input hidden="hidden" type="text" name="InspectionUserName" value="@if (string.IsNullOrEmpty(m.InspectionUserName)) {@user.UserName  } else { @m.InspectionUserName; }"></td>
+                        </tr>
                     </tbody>
                 </table>
 

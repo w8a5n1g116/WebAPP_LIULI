@@ -284,6 +284,9 @@ namespace WebAPP_LIULI.Controllers
             {
                 w.CreateTime = CreateTime;
                 w.InspectionTime = CreateTime;
+                string username = w.InspectionUserName;
+                User user = model.User.Where(p => p.UserName == username).First();
+                w.HalfWarehousingTeam = user.UserTeam;
                 if (w.InspectionCount != 0)
                     model.HalfWarehousing.Add(w);
             }
@@ -874,7 +877,14 @@ namespace WebAPP_LIULI.Controllers
 
             QualityRate = (LastProductions / (LastProductions + Scrap)) * 100;
 
-            
+
+            List<HalfWarehousing> hws = model.HalfWarehousing.Where(p => p.InspectionTime >= start && p.InspectionTime <= end && p.HalfWarehousingTeam == team).ToList();
+
+            double Half = 0;
+            if (hws.Any())
+            {
+                Half = hws.Sum(p => p.InspectionCount);
+            }
 
 
             string dateString = DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
@@ -884,7 +894,7 @@ namespace WebAPP_LIULI.Controllers
                 Punishment = rps.Sum(p => p.Count);
             }
 
-            Income =  LastProductions * product.OneOfPrice + Punishment;
+            Income =  LastProductions * product.OneOfPrice + Half * product.OneOfPrice + Punishment;
 
 
             FixedAllocation = Income * (1- basedata.AllocationRate);
@@ -969,7 +979,18 @@ namespace WebAPP_LIULI.Controllers
 
             QualityRate = (1- (Scrap /LastProductions)) * 100;
 
-            
+
+            List<HalfWarehousing> hws = model.HalfWarehousing.Where(p => p.InspectionTime >= start && p.InspectionTime <= end && p.HalfWarehousingTeam == team).ToList();
+
+            double Half = 0;
+            if (hws.Any())
+            {
+                Half = hws.Sum(p => p.InspectionCount);
+            }
+
+            LastProductions = LastProductions + Half;
+             
+
             string dateString = DateTime.Now.ToString("yyyy-MM");
             List<RewardPunishment> rps = model.RewardPunishment.Where(p => p.Date == dateString).ToList();
             if (rps.Any())
@@ -1083,7 +1104,7 @@ namespace WebAPP_LIULI.Controllers
             double Respository = WarehousingCount - sendCount;
 
             List<OrderRepository> rsList = new List<OrderRepository>();
-            List<string> productNameList = orders.Select(p => product.ProductName).Distinct().ToList();
+            List<string> productNameList = orders.Select(p => p.ProductName).Distinct().ToList();
 
             foreach(var productName in productNameList)
             {
