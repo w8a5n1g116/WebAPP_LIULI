@@ -3,6 +3,7 @@
     User user = (User)Session["User"];
 
     List<FurtureXisMonth> fxmList = ViewBag.fxmList;
+    List<OrderRepository> rsList = ViewBag.rsList;
 }
 
 <!-- Page-Title -->
@@ -88,16 +89,16 @@
                         @foreach (CustomerPriceRate cpr in ViewBag.cprList)
                         {
                             @*<tr>
-                                <td>@cpr.CustomerName</td>
-                                <td>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</td>
-                                <td>
-                                    <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
-                                    <div class="progress progress-bar-primary-alt progress-sm m-b-20">
-                                        <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@cpr.Rate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @cpr.Rate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
-                                        </div><!-- /.progress-bar .progress-bar-danger -->
-                                    </div>
-                                </td>
-                            </tr>*@
+                                    <td>@cpr.CustomerName</td>
+                                    <td>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</td>
+                                    <td>
+                                        <p class="font-600 m-b-5"> <span class="text-primary pull-right">@cpr.Rate.ToString("0.00") %</span></p>
+                                        <div class="progress progress-bar-primary-alt progress-sm m-b-20">
+                                            <div class="progress-bar progress-bar-primary progress-animated wow animated animated" role="progressbar" aria-valuenow="@cpr.Rate.ToString("0.00")" aria-valuemin="0" aria-valuemax="100" style="width: @cpr.Rate.ToString("0.00")%; visibility: visible; animation-name: animationProgress;">
+                                            </div><!-- /.progress-bar .progress-bar-danger -->
+                                        </div>
+                                    </td>
+                                </tr>*@
 
                             <tr>
                                 <td><h3>@((cpr.CustomerPriceCount / 10000).ToString("0.00")) 万元</h3>@cpr.CustomerName</td>
@@ -110,13 +111,13 @@
                                     </div>
                                 </td>
                                 @*<td>
-                                    <div class="widget-chart-box-1">
-                                        <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
-                                               data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
-                                               data-skin="tron" data-angleOffset="180" data-readOnly=true
-                                               data-thickness=".15" />
-                                    </div>
-                                </td>*@
+                                        <div class="widget-chart-box-1">
+                                            <input data-plugin="knob" data-width="80" data-height="80" data-fgColor="#f05050 "
+                                                   data-bgColor="#F9B9B9" value="@cs.ScrapRate.ToString("0.00")"
+                                                   data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                                   data-thickness=".15" />
+                                        </div>
+                                    </td>*@
                             </tr>
                         }
 
@@ -193,6 +194,25 @@
 </div>
 <!-- end row -->
 
+<div class="col-xl-6">
+    <div class="card-box">
+
+        <h4 class="header-title m-t-0 m-b-30">产品未交付订单-库存对比图</h4>
+
+        <div class="text-center">
+            <ul class="list-inline chart-detail-list">
+                <li class="list-inline-item">
+                    <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>订单量</h5>
+                </li>
+                <li class="list-inline-item">
+                    <h5 style="color: #35b8e0;"><i class="fa fa-circle m-r-5"></i>库存</h5>
+                </li>
+            </ul>
+        </div>
+        <div id="morris-bar-example2" style="height: 300px;"></div>
+    </div>
+</div><!-- end col-->
+
 <script>
     $(document).ready(function () {
         var $barData = [
@@ -219,6 +239,32 @@
             gridLineColor: '#eeeeee',
             barSizeRatio: 0.4,
             barColors: [ '#5b69bc']
+        });
+
+        var $barData2 = [
+            @{
+                foreach (OrderRepository rs in rsList)
+                {
+                    <text>{y:'@rs.ProductName',a:@rs.OrderCount ,b:@rs.RepositoryCount}</text>
+                    if (rsList.Last() != rs)
+                    {
+                        <text>,</text>
+                    }
+                }
+            }
+        ];
+
+        Morris.Bar({
+            element: 'morris-bar-example2',
+            data: $barData2,
+            xkey: 'y',
+            ykeys: ['a','b'],
+            labels: ['订单量','库存'],
+            hideHover: 'auto',
+            resize: true, //defaulted to true
+            gridLineColor: '#eeeeee',
+            barSizeRatio: 0.4,
+            barColors: [ '#5b69bc','#35b8e0']
         });
 
     });

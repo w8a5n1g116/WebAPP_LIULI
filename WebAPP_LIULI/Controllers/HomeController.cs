@@ -78,6 +78,41 @@ namespace WebAPP_LIULI.Controllers
 
         }
 
+        public string SendDDMessage(string message)
+        {
+
+            string msg = "{\"msgtype\":\"text\",\"text\":{\"content\":\"" + message + "\"}}";
+
+            HttpClient _httpClient = new HttpClient();
+
+            HttpResponseMessage ret = _httpClient.GetAsync("https://oapi.dingtalk.com/gettoken?appkey=dingbf00i6u9uslk4vso&appsecret=FMYLKxLu17x1qJVFD15oPKK_aSk0E6WG7SGnFKGZn1_-qaW94yeAasG-ntagK1vO").Result;
+
+            string retstring = ret.Content.ReadAsStringAsync().Result;
+            JObject o = JObject.Parse(retstring);
+
+            _httpClient = new HttpClient();
+
+            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+
+            KeyValuePair<string, string> keyvaluep = new KeyValuePair<string, string>("agent_id", "326443844");
+            KeyValuePair<string, string> keyvaluep1 = new KeyValuePair<string, string>("to_all_user", "true");
+            KeyValuePair<string, string> keyvaluep2 = new KeyValuePair<string, string>("msg", msg);
+
+            keyValuePairs.Add(keyvaluep);
+            keyValuePairs.Add(keyvaluep1);
+            keyValuePairs.Add(keyvaluep2);
+
+            HttpContent httpContent = new FormUrlEncodedContent(keyValuePairs);
+
+            ret = _httpClient.PostAsync("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2?access_token=" + o["access_token"], httpContent).Result;
+
+            retstring = ret.Content.ReadAsStringAsync().Result;
+
+            JObject o2 = JObject.Parse(retstring);
+            //o2["errcode"].ToString();
+            return "";
+        }
+
         public ActionResult SendMaterial()
         {
             List<Driver> drivers = model.MaterialDriver.Where(p => p.Status == 1).ToList();
@@ -625,6 +660,9 @@ namespace WebAPP_LIULI.Controllers
         {
             BaseData _m = model.BaseData.Where(p => p.Id == m.Id).FirstOrDefault();
             _m.OneOfTonPrice = m.OneOfTonPrice;
+            _m.AllocationRate = m.AllocationRate;
+            _m.MonitorMoney = m.MonitorMoney;
+            _m.Name = m.Name;
             model.SaveChanges();
             return RedirectToAction("DefalutReport");
         }
@@ -783,7 +821,6 @@ namespace WebAPP_LIULI.Controllers
             {
                 count = beforeSendOrders.Sum(p => p.ReceiveCount);
             }
-            count += _m.ReceiveCount;
             _m.Order.DeliveryCount = count;
             if(count >= order.ProductCount)
                 _m.Order.OrderStatus = "已完成";
@@ -818,6 +855,14 @@ namespace WebAPP_LIULI.Controllers
             {
                 m.CreateTime = DateTime.Now;
                 model.RewardPunishment.Add(m);
+
+                string message = "";
+                message += "日期:" + m.CreateTime.ToString("yyyy年MM月dd日") + "\n";
+                message += "奖罚类型:" + m.Type + "\n";
+                message += "奖罚金额:" + m.Count + "\n";
+                message += "奖罚班组:" + m.Team + "\n";
+                message += "提出人员:" + m.UserName + "\n";
+                SendDDMessage(message);
             }
             else
             {
@@ -830,7 +875,8 @@ namespace WebAPP_LIULI.Controllers
                 _m.UserName = m.UserName;
             }
 
-            model.SaveChanges();
+            model.SaveChanges();        
+
             return RedirectToAction("RewardPunishmentList");
         }
 
@@ -962,22 +1008,26 @@ namespace WebAPP_LIULI.Controllers
             List<Warehousing> ws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end && p.WarehousingTeam == team).ToList();
 
             double AllLastProductions = 0;
+            //double AllLastProductions_ = 0;
             if (ws.Any())
             {
+                //AllLastProductions = ws.Sum(p => p.WarehousingCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
                 AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team && p.CheckResult == "不合格").ToList();
 
             double Scrap = 0;
+            //double Scrap_ = 0;
             if (qs.Any())
             {
+                //Scrap = qs.Sum(p => p.ScrapCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
                 Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
             LastProductions = AllLastProductions;
 
-            QualityRate = (1- (Scrap /LastProductions)) * 100;
+            QualityRate = (1- (Scrap / AllLastProductions)) * 100;
 
 
             List<HalfWarehousing> hws = model.HalfWarehousing.Where(p => p.InspectionTime >= start && p.InspectionTime <= end && p.HalfWarehousingTeam == team).ToList();
@@ -1225,6 +1275,8 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult SaleReport()
         {
+            BaseData basedata = model.BaseData.First();
+
             Product product = model.Product.First();
 
             List<Order> orders = model.Order.ToList();
@@ -1244,6 +1296,39 @@ namespace WebAPP_LIULI.Controllers
             }
 
             double ContinueOrderCount = AllorderCount - DoneOrderCount;
+
+            List<Warehousing> allws = model.Warehousing.ToList();
+            double WarehousingCount = 0;
+            if (allws.Any())
+            {
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * basedata.Name;
+            }
+
+
+
+            List<SendOrder> sendorders = model.SendOrder.ToList();
+            double sendCount = 0;
+            if (sendorders.Any())
+            {
+                sendCount = sendorders.Sum(p => p.SendCount);
+            }
+
+            double Respository = WarehousingCount - sendCount;
+
+            List<OrderRepository> rsList = new List<OrderRepository>();
+            List<string> productNameList = orders.Select(p => p.ProductName).Distinct().ToList();
+
+            foreach (var productName in productNameList)
+            {
+                OrderRepository rs = new OrderRepository();
+                List<Order> temporders = orders.Where(p => p.ProductName == productName).ToList();
+
+                rs.ProductName = productName;
+                rs.OrderCount = temporders.Sum(p => p.ProductCount - p.DeliveryCount);
+                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.Order.ProductName == productName).Sum(p => p.SendCount);
+
+                rsList.Add(rs);
+            }
 
             //
             List<CustomerSpread> csList = new List<CustomerSpread>();
@@ -1314,6 +1399,7 @@ namespace WebAPP_LIULI.Controllers
             ViewBag.csList = csList;
             ViewBag.fxmList = fxmList;
             ViewBag.cprList = cprList;
+            ViewBag.rsList = rsList;
 
 
             return View();
