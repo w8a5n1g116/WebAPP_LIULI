@@ -270,6 +270,7 @@
         public double AllocationRate { get; set; }
         public double OneOfTonPrice { get; set; }
         public double MonitorMoney { get; set; }
+        public double HalfMoney { get; set; }
     }
 
 }

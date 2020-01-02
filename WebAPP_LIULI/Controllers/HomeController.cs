@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            //Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)
@@ -663,6 +663,7 @@ namespace WebAPP_LIULI.Controllers
             _m.AllocationRate = m.AllocationRate;
             _m.MonitorMoney = m.MonitorMoney;
             _m.Name = m.Name;
+            _m.HalfMoney = m.HalfMoney;
             model.SaveChanges();
             return RedirectToAction("DefalutReport");
         }
@@ -906,22 +907,26 @@ namespace WebAPP_LIULI.Controllers
             List<Warehousing> ws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end).ToList();
 
             double AllLastProductions = 0;
-            if(ws.Any())
+            double AllLastProductions_ = 0;
+            if (ws.Any())
             {
+                AllLastProductions_ = ws.Sum(p => p.WarehousingCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
                 AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team).ToList();
 
             double Scrap = 0;
-            if(qs.Any())
+            double Scrap_ = 0;
+            if (qs.Any())
             {
-                Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name ;
+                Scrap_ = qs.Sum(p => p.ScrapCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
+                Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
             LastProductions = AllLastProductions;
 
-            QualityRate = (LastProductions / (LastProductions + Scrap)) * 100;
+            QualityRate = (1 - (Scrap / AllLastProductions)) * 100;
 
 
             List<HalfWarehousing> hws = model.HalfWarehousing.Where(p => p.InspectionTime >= start && p.InspectionTime <= end && p.HalfWarehousingTeam == team).ToList();
@@ -929,7 +934,7 @@ namespace WebAPP_LIULI.Controllers
             double Half = 0;
             if (hws.Any())
             {
-                Half = hws.Sum(p => p.InspectionCount);
+                Half = hws.Sum(p => p.InspectionCount) * basedata.HalfMoney;
             }
 
 
@@ -940,7 +945,9 @@ namespace WebAPP_LIULI.Controllers
                 Punishment = rps.Sum(p => p.Count);
             }
 
-            Income =  LastProductions * product.OneOfPrice + Half * product.OneOfPrice + Punishment;
+            Income = AllLastProductions_ + Half + Punishment;
+
+            //Income =  LastProductions * product.OneOfPrice + Half * product.OneOfPrice + Punishment;
 
 
             FixedAllocation = Income * (1- basedata.AllocationRate);
@@ -1008,20 +1015,20 @@ namespace WebAPP_LIULI.Controllers
             List<Warehousing> ws = model.Warehousing.Where(p => p.WarehousingTime >= start && p.WarehousingTime <= end && p.WarehousingTeam == team).ToList();
 
             double AllLastProductions = 0;
-            //double AllLastProductions_ = 0;
+            double AllLastProductions_ = 0;
             if (ws.Any())
             {
-                //AllLastProductions = ws.Sum(p => p.WarehousingCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
+                AllLastProductions_ = ws.Sum(p => p.WarehousingCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
                 AllLastProductions = ws.Sum(p => p.WarehousingCount) * basedata.Name;
             }
 
             List<QualityInspection> qs = model.QualityInspection.Where(p => p.CreateTime >= start && p.CreateTime <= end && p.CheckTeam == team && p.CheckResult == "不合格").ToList();
 
             double Scrap = 0;
-            //double Scrap_ = 0;
+            double Scrap_ = 0;
             if (qs.Any())
             {
-                //Scrap = qs.Sum(p => p.ScrapCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
+                Scrap_ = qs.Sum(p => p.ScrapCount * model.Product.Where(a => a.ProductName == p.ProductName).FirstOrDefault().OneOfPrice * basedata.Name);
                 Scrap = qs.Sum(p => p.ScrapCount) * basedata.Name;
             }
 
@@ -1035,10 +1042,10 @@ namespace WebAPP_LIULI.Controllers
             double Half = 0;
             if (hws.Any())
             {
-                Half = hws.Sum(p => p.InspectionCount);
+                Half = hws.Sum(p => p.InspectionCount) * basedata.HalfMoney;
             }
 
-            LastProductions = LastProductions + Half;
+            //LastProductions = LastProductions + Half;
              
 
             string dateString = DateTime.Now.ToString("yyyy-MM");
@@ -1048,7 +1055,8 @@ namespace WebAPP_LIULI.Controllers
                 Punishment = rps.Sum(p => p.Count);
             }
 
-            Income =  LastProductions * product.OneOfPrice + Punishment;
+            //Income =  LastProductions * product.OneOfPrice + Punishment;
+            Income = AllLastProductions_ + Half + Punishment;
 
             //
             List<TodayProductRate> tprList = new List<TodayProductRate>();
