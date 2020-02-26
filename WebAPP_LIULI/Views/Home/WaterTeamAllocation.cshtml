@@ -1,9 +1,9 @@
 ﻿@using WebAPP_LIULI.Models;
 @{
-    List<TeamAllocation> m = Model;
+    List<WaterTeamAllocation> m = Model;
     if (m == null)
     {
-        m = new List<TeamAllocation>();
+        m = new List<WaterTeamAllocation>();
     }
 
     User user = (User)Session["User"];
@@ -25,41 +25,13 @@
     <div class="col-12">
         <div class="card-box">
             <form id="FormBody" class="form-horizontal" role="form">
-                <div class="row m-b-20">
-                    <div class="col-6">
-                        <div class="btn btn-block btn-primary">
-                            <h5>上月产量</h5>
-                            <span id="LastProductions">@ViewBag.LastProductions</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="btn btn-block btn-warning">
-                            <h5>合格率</h5>
-                            <span id="QualityRate">@ViewBag.QualityRate.ToString("0.00") %</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row m-b-20">
-                    <div class="col-6">
-                        <div class="btn btn-block btn-success">
-                            <h5>班组收入</h5>
-                            <span id="Income">@ViewBag.Income</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="btn btn-block btn-danger">
-                            <h5>奖罚</h5>
-                            <span id="Punishment">@ViewBag.Punishment</span>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="row m-b-20">
                     <div class="col-12">
                         <div class="btn btn-block btn-pink">
                             <h5>可分配金额</h5>
-                            <span id="AllocationCount">@ViewBag.AllocationCount</span>
+                            <span id="AllocationCount">6000</span>
                         </div>
                     </div>
                 </div>
@@ -82,7 +54,7 @@
                     <thead>
                         <tr>
                             <th>班组成员</th>
-                            <th>固定分配</th>
+                            <th>产量</th>
                             <th>班长分配</th>
                         </tr>
                     </thead>
@@ -134,8 +106,8 @@
                         count += Number($(val).val());
                     });
 
-                    if (count != allocationCount) {
-                        swal('成员分配之和应等于可分配金额！').catch(swal.noop)
+                    if (count > 6000) {
+                        swal('绩效分配不能大于6000！').catch(swal.noop)
                         return;
                     }
 
@@ -157,7 +129,7 @@
                         teamAllocations.push(postdata);
                     });
 
-                    $.post('/Home/TeamAllocation', { teamAllocations }, function (data) {
+                    $.post('/Home/WaterTeamAllocation', { teamAllocations }, function (data) {
                         var jsonObject = JSON.parse(data);
                         if (jsonObject.success == true) {
                             swal(
@@ -193,7 +165,7 @@
             });
 
             $('#Query').click(function () {
-                window.location = '/Home/TeamAllocationQuery?date=' + $('#month').val();
+                window.location = '/Home/WaterTeamAllocationQuery?date=' + $('#month').val();
             });
         });
     </script>

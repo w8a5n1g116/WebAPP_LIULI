@@ -33,6 +33,7 @@
         public virtual DbSet<SendOrder> SendOrder { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<TeamAllocation> TeamAllocation { get; set; }
+        public virtual DbSet<WaterTeamAllocation> WaterTeamAllocation { get; set; }
         public virtual DbSet<RewardPunishment> RewardPunishment { get; set; }
         public virtual DbSet<BaseData> BaseData { get; set; }
         public virtual DbSet<HalfQualityInspection> HalfQualityInspection { get; set; }
@@ -236,6 +237,20 @@
     }
 
     public class TeamAllocation
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public string Date { get; set; }
+        public double FixedAllocation { get; set; }
+        public double Allocation { get; set; }
+        public virtual User User { get; set; }
+        public DateTime CreateTime { get; set; }
+        public string Remarks { get; set; }
+        public string UserName { get; set; }
+
+    }
+
+    public class WaterTeamAllocation
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

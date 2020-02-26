@@ -1,0 +1,79 @@
+﻿@using WebAPP_LIULI.Models;
+@{
+    List<TeamAllocation> m = Model;
+    if (m == null)
+    {
+        m = new List<TeamAllocation>();
+    }
+
+    User user = (User)Session["User"];
+
+}
+
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <h4 class="page-title">经营分配查询</h4>
+    </div>
+</div>
+<!-- end page title end breadcrumb -->
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card-box">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/">               
+                <div class="form-group row form-inline">
+                    <label class="col-3 col-form-label">历史查询</label>
+                    <div class="col-9">
+                        <div class="row form-inline">
+                            <div class="col-8"><input class="form-control" type="month" name="month" id="month"></div>
+                            <div class="col-4"><button type="button" class="btn btn-xs btn-purple waves-effect waves-light" id="Query">查询</button></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>班组成员</th>
+                            <th>固定分配</th>
+                            <th>班长分配</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in m)
+                        {
+                            <tr>
+                                <td width="30%">@c.UserName<input hidden="hidden" name="UserName" value="@c.UserName"></td>
+                                <td width="30%">@c.FixedAllocation<input hidden="hidden" type="text" name="FixedAllocation" value="@c.FixedAllocation"></td>
+                                <td width="40%"><input class="form-control" type="number" name="Allocation" value="@c.Allocation"></td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+
+            </form>
+
+
+        </div>
+    </div><!-- end col -->
+
+    <script>
+        $(document).ready(function () {
+            $('#Query').click(function () {
+                window.location = '/Home/TeamAllocationQuery?date=' + $('#month').val();
+            });
+        });
+    </script>
+
+</div>
+<!-- end row -->

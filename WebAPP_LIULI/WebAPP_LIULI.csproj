@@ -230,6 +230,10 @@
     <Compile Include="Migrations\201912310013461_init20.Designer.cs">
       <DependentUpon>201912310013461_init20.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002260537256_init21.cs" />
+    <Compile Include="Migrations\202002260537256_init21.Designer.cs">
+      <DependentUpon>202002260537256_init21.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
@@ -1523,6 +1527,9 @@
     <Content Include="Views\Home\HalfWarehousingInspection.cshtml" />
     <Content Include="Views\Home\HalfWarehousingConfirm.cshtml" />
     <Content Include="Views\Home\HalfWarehousingConfirmList.cshtml" />
+    <Content Include="Views\Home\WaterTeamAllocation.cshtml" />
+    <Content Include="Views\Home\TeamAllocationQuery.cshtml" />
+    <Content Include="Views\Home\WaterTeamAllocationQuery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201911211610453_init.resx">
@@ -1587,6 +1594,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912310013461_init20.resx">
       <DependentUpon>201912310013461_init20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002260537256_init21.resx">
+      <DependentUpon>202002260537256_init21.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -403,6 +403,18 @@ namespace WebAPP_LIULI.Controllers
             //m.ScrapCount = 1;
             if (m.CheckResult == "合格")
                 m.UnqualifiedReson = null;
+            else
+            {
+                string message = "成品检验信息\n";
+                message += "日期:" + m.CreateTime.ToString("yyyy年MM月dd日") + "\n";
+                message += "工序:" + m.ProcessName + "\n";
+                message += "产品:" + m.ProductName + "\n";
+                message += "数量:" + m.ScrapCount + "\n";
+                message += "班组:" + m.CheckTeam + "\n";
+                message += "原因:" + m.UnqualifiedReson + "\n";
+                message += "备注:" + m.Remarks + "\n";
+                SendDDMessage(message);
+            }
 
             model.QualityInspection.Add(m);
             model.SaveChanges();
@@ -983,6 +995,79 @@ namespace WebAPP_LIULI.Controllers
             return View(tas);
         }
 
+        public ActionResult TeamAllocationQuery(string date)
+        {            
+            List<TeamAllocation> tas = model.TeamAllocation.Where(p => p.Date == date).ToList();
+
+            return View(tas);
+        }
+
+        public ActionResult WaterTeamAllocation()
+        {
+
+            DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
+            DateTime end = start.AddMonths(1);
+
+
+
+            List<HalfWarehousing> hws = model.HalfWarehousing.Where(p => p.InspectionTime >= start && p.InspectionTime <= end && p.HalfWarehousingTeam == "水洗组" && p.IsConfirm == 1).ToList();
+
+            List<string> userNames = hws.Select(p => p.InspectionUserName).Distinct().ToList();
+
+
+            List<WaterTeamAllocation> tas = new List<WaterTeamAllocation>();
+
+            foreach(var name in userNames)
+            {
+                List<HalfWarehousing> hw = hws.Where(p => p.InspectionUserName == name).ToList();
+
+                WaterTeamAllocation ta = new WaterTeamAllocation();
+
+                ta.Date = DateTime.Now.ToString("yyyy-MM");
+                ta.FixedAllocation = hw.Sum(p => p.HalfWarehousingCount);
+
+                double count = 0;
+
+                foreach(var h in hw)
+                {
+                    double a = 0;
+                    if (h.HalfWarehousingCount >= 2800)
+                    {
+                        double last = h.HalfWarehousingCount - 2800;
+
+                        int n = Convert.ToInt32(last / 50);
+
+                        a = 250 + n * 50;
+
+                    }
+                    else
+                    {
+                        a = -150;
+                    }
+
+                    count += a;
+                }
+
+                ta.Allocation = count;
+                User u = model.User.Where(p => p.UserName == name).FirstOrDefault();
+                ta.User = u;
+                ta.CreateTime = DateTime.Now;
+                ta.UserName = name;
+
+                tas.Add(ta);
+            }
+
+
+            return View(tas);
+        }
+
+        public ActionResult WaterTeamAllocationQuery(string date)
+        {
+            List<WaterTeamAllocation> tas = model.WaterTeamAllocation.Where(p => p.Date == date).ToList();
+
+            return View(tas);
+        }
+
 
         [HttpPost]
         public string TeamAllocation(List<TeamAllocation> teamAllocations)
@@ -990,9 +1075,26 @@ namespace WebAPP_LIULI.Controllers
             var CreateTime = DateTime.Now;
             foreach (var w in teamAllocations)
             {
-                w.CreateTime = CreateTime;
-                model.TeamAllocation.Add(w);
                 w.Date = DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+                w.CreateTime = CreateTime;
+                if (!model.TeamAllocation.Where(p => p.Date == w.Date).Any())               
+                model.TeamAllocation.Add(w);
+                
+            }
+            model.SaveChanges();
+            return "{\"success\":true}";
+        }
+
+        [HttpPost]
+        public string WaterTeamAllocation(List<WaterTeamAllocation> teamAllocations)
+        {
+            var CreateTime = DateTime.Now;
+            foreach (var w in teamAllocations)
+            {
+                w.Date = DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+                w.CreateTime = CreateTime;
+                if (!model.WaterTeamAllocation.Where(p => p.Date == w.Date).Any())
+                    model.WaterTeamAllocation.Add(w);
             }
             model.SaveChanges();
             return "{\"success\":true}";
