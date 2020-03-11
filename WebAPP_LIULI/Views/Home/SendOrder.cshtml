@@ -165,12 +165,21 @@
             })
 
             $('#SendCount').change(function () {
+                var orderCount = @m.Order.ProductCount;
                 var sendCount = $("#SendCount").val();
                 var respository = $("Respository").val();
 
                 if (sendCount > respository) {
                     swal(
                         '发货量超过库存！',
+                        '请核对发货量！',
+                        'error'
+                    )
+                }
+
+                if (sendCount > orderCount) {
+                    swal(
+                        '发货量超过订单数量！',
                         '请核对发货量！',
                         'error'
                     )

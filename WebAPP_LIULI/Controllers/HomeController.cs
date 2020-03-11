@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+            //Session["User"] = model.User.Where(p => p.UserName == "张世平").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)
@@ -736,7 +736,7 @@ namespace WebAPP_LIULI.Controllers
 
             ViewBag.Respository = Respository;
 
-            SendOrder m = model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
+            SendOrder m = null;//model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
             if (m == null)
             {
                 m = new SendOrder();
@@ -764,7 +764,21 @@ namespace WebAPP_LIULI.Controllers
             _m.Contact = m.Contact;
             _m.ContactPhone = m.ContactPhone;
             _m.Remarks = m.Remarks;
-            _m.Order.OrderStatus = "部分发货";
+
+            model.SaveChanges();
+
+            Order order = _m.Order;
+            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.Order.Id == order.Id).ToList();
+            double count = 0;
+            if (beforeSendOrders.Any())
+            {
+                count = beforeSendOrders.Sum(p => p.SendCount);
+            }
+
+            if (count < _m.Order.ProductCount)
+                _m.Order.OrderStatus = "部分发货";
+            else
+                _m.Order.OrderStatus = "全部发货";
 
             model.SaveChanges();
             return RedirectToAction("OrderList");
@@ -826,6 +840,9 @@ namespace WebAPP_LIULI.Controllers
             _m.TaskStatus = "已收货";
             _m.ReceiveDeterminePerson = m.ReceiveDeterminePerson;
             _m.ReceiveTime = DateTime.Now;
+            _m.Remarks = m.Remarks;
+
+            model.SaveChanges();
 
             Order order = _m.Order;
             List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.Order.Id == order.Id).ToList();
@@ -837,7 +854,7 @@ namespace WebAPP_LIULI.Controllers
             _m.Order.DeliveryCount = count;
             if(count >= order.ProductCount)
                 _m.Order.OrderStatus = "已完成";
-            _m.Remarks = m.Remarks;
+            
 
             model.SaveChanges();
             return RedirectToAction("ReceiveSendOrderList");
@@ -1264,7 +1281,7 @@ namespace WebAPP_LIULI.Controllers
             double Respository = WarehousingCount - sendCount;
 
             List<OrderRepository> rsList = new List<OrderRepository>();
-            List<string> productNameList = orders.Select(p => p.ProductName).Distinct().ToList();
+            List<string> productNameList = model.Product.Select(p => p.ProductName).Distinct().ToList();
 
             foreach(var productName in productNameList)
             {
@@ -1426,7 +1443,7 @@ namespace WebAPP_LIULI.Controllers
             double Respository = WarehousingCount - sendCount;
 
             List<OrderRepository> rsList = new List<OrderRepository>();
-            List<string> productNameList = orders.Select(p => p.ProductName).Distinct().ToList();
+            List<string> productNameList = model.Product.Select(p => p.ProductName).Distinct().ToList();
 
             foreach (var productName in productNameList)
             {
