@@ -234,6 +234,14 @@
     <Compile Include="Migrations\202002260537256_init21.Designer.cs">
       <DependentUpon>202002260537256_init21.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003120300109_init22.cs" />
+    <Compile Include="Migrations\202003120300109_init22.Designer.cs">
+      <DependentUpon>202003120300109_init22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003120359004_init23.cs" />
+    <Compile Include="Migrations\202003120359004_init23.Designer.cs">
+      <DependentUpon>202003120359004_init23.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
@@ -1513,6 +1521,7 @@
     <Content Include="Views\Home\ProductReport.cshtml" />
     <Content Include="Views\Home\SaleReport.cshtml" />
     <Content Include="Views\Home\MainReport.cshtml" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <Content Include="Views\Home\DefalutReport.cshtml" />
     <Content Include="Views\Home\OrderQueryList.cshtml" />
@@ -1530,6 +1539,8 @@
     <Content Include="Views\Home\WaterTeamAllocation.cshtml" />
     <Content Include="Views\Home\TeamAllocationQuery.cshtml" />
     <Content Include="Views\Home\WaterTeamAllocationQuery.cshtml" />
+    <Content Include="Views\Home\MidSendOrderList.cshtml" />
+    <Content Include="Views\Home\MidSendOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201911211610453_init.resx">
@@ -1597,6 +1608,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002260537256_init21.resx">
       <DependentUpon>202002260537256_init21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003120300109_init22.resx">
+      <DependentUpon>202003120300109_init22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003120359004_init23.resx">
+      <DependentUpon>202003120359004_init23.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

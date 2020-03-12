@@ -38,6 +38,7 @@
         public virtual DbSet<BaseData> BaseData { get; set; }
         public virtual DbSet<HalfQualityInspection> HalfQualityInspection { get; set; }
         public virtual DbSet<HalfWarehousing> HalfWarehousing { get; set; }
+        public virtual DbSet<MidSendOrder> MidSendOrder { get; set; }
 
     }
 
@@ -142,6 +143,7 @@
         public DateTime CreateTime { get; set; }
         public int IsConfirm { get; set; }
         public string ConfirmName { get; set; }
+        public string CustomerShortName { get; set; }
 
     }
 
@@ -199,6 +201,31 @@
         public double DeliveryCount { get; set; }
     }
 
+    public class MidSendOrder
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public string TaskId { get; set; }
+        public double SendCount { get; set; }
+        public double ReceiveCount { get; set; }
+        public string SendDeterminePerson { get; set; }
+        public string ReceiveDeterminePerson { get; set; }
+        public string TaskStatus { get; set; }
+        public string Remarks { get; set; }
+        public DateTime? SendTime { get; set; }
+        public DateTime? ReceiveTime { get; set; }
+        public DateTime CreateTime { get; set; }
+        public string CustomerAddress { get; set; }
+        public string Contact { get; set; }
+        public string ContactPhone { get; set; }
+        public virtual Order Order { get; set; }
+        public double OneOfTonPrice { get; set; }
+        public int IsComfirm { get; set; }
+
+
+
+    }
+
     public class SendOrder
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -217,7 +244,7 @@
         public string CustomerAddress { get; set; }
         public string Contact { get; set; }
         public string ContactPhone { get; set; }
-        public virtual Order Order { get; set; }
+        public virtual MidSendOrder MidSendOrder { get; set; }
         public double OneOfTonPrice { get; set; }
         public int IsComfirm { get; set; }
 

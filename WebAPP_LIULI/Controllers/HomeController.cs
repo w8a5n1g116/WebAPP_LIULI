@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            //Session["User"] = model.User.Where(p => p.UserName == "张世平").First();
+            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)
@@ -211,6 +211,10 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult Warehousing(int id)
         {
+            List<Customer> customers = model.Customer.ToList();
+
+            ViewBag.customers = customers;
+
             List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
             ViewBag.teams = teams;
 
@@ -237,8 +241,10 @@ namespace WebAPP_LIULI.Controllers
                 var _w = model.Warehousing.Where(p => p.Id == w.Id).First();
                 _w.WarehousingCount = w.WarehousingCount;
                 _w.WarehousingName = w.WarehousingName;
-                _w.WarehousingTeam = w.WarehousingTeam;
+                string team = model.User.Where(p => p.UserName == _w.InspectionUserName).First().UserTeam;
+                _w.WarehousingTeam = team;//w.WarehousingTeam;
                 _w.WarehousingTime = WarehousingTime;
+                _w.CustomerShortName = w.CustomerShortName;
                 _w.Remarks = w.Remarks;
             }
 
@@ -455,6 +461,15 @@ namespace WebAPP_LIULI.Controllers
                 (p.OrderStatus != "已完成" || 
                 p.OrderStatus != "已关闭")
                 ).OrderByDescending(p => p.OrderStatus).ToList();
+
+            return View(mList);
+        }
+
+        public ActionResult MidSendOrderList()
+        {
+            List<MidSendOrder> mList = new List<MidSendOrder>();
+
+            mList = model.MidSendOrder.Where(p => p.TaskStatus != "全部发货").ToList();
 
             return View(mList);
         }
@@ -714,6 +729,75 @@ namespace WebAPP_LIULI.Controllers
             return RedirectToAction("ProductList");
         }
 
+        public ActionResult MidSendOrder(int? id)
+        {
+            BaseData basedata = model.BaseData.First();
+
+            List<Warehousing> allws = model.Warehousing.ToList();
+            double WarehousingCount = 0;
+            if (allws.Any())
+            {
+                WarehousingCount = allws.Sum(p => p.WarehousingCount) * basedata.Name;
+            }
+
+            List<MidSendOrder> sendorders = model.MidSendOrder.ToList();
+            double sendCount = 0;
+            if (sendorders.Any())
+            {
+                sendCount = sendorders.Sum(p => p.SendCount);
+            }
+
+            double Respository = WarehousingCount - sendCount;
+
+            ViewBag.Respository = Respository;
+
+            MidSendOrder m = null;//model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
+            if (m == null)
+            {
+                m = new MidSendOrder();
+                m.CreateTime = DateTime.Now;
+                Order o = model.Order.Where(p => p.Id == id).First();
+                m.Order = o;
+                m.TaskStatus = "待发货";
+                m.TaskId = "SendOrder_" + m.CreateTime.ToString("yyyyMMddHHmmss");
+                model.MidSendOrder.Add(m);
+                model.SaveChanges();
+            }
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult MidSendOrder(SendOrder m)
+        {
+            MidSendOrder _m = model.MidSendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
+
+            _m.TaskStatus = "准备发货";
+            _m.SendCount = m.SendCount;
+            _m.SendTime = m.SendTime; ;
+            _m.SendDeterminePerson = m.SendDeterminePerson;
+            _m.CustomerAddress = m.CustomerAddress;
+            _m.Contact = m.Contact;
+            _m.ContactPhone = m.ContactPhone;
+            _m.Remarks = m.Remarks;
+
+            model.SaveChanges();
+
+            Order order = _m.Order;
+            List<MidSendOrder> beforeSendOrders = model.MidSendOrder.Where(p => p.Order.Id == order.Id).ToList();
+            double count = 0;
+            if (beforeSendOrders.Any())
+            {
+                count = beforeSendOrders.Sum(p => p.SendCount);
+            }
+
+            if (count < _m.Order.ProductCount)
+                _m.Order.OrderStatus = "部分发货";
+            else
+                _m.Order.OrderStatus = "全部发货";
+
+            model.SaveChanges();
+            return RedirectToAction("OrderList");
+        }
         public ActionResult SendOrder(int? id)
         {
             BaseData basedata = model.BaseData.First();
@@ -741,8 +825,8 @@ namespace WebAPP_LIULI.Controllers
             {
                 m = new SendOrder();
                 m.CreateTime = DateTime.Now;
-                Order o = model.Order.Where(p => p.Id == id).First();
-                m.Order = o;
+                MidSendOrder o = model.MidSendOrder.Where(p => p.Id == id).First();
+                m.MidSendOrder = o;
                 m.TaskStatus = "待发货";
                 m.TaskId = "SendOrder_" + m.CreateTime.ToString("yyyyMMddHHmmss");
                 model.SendOrder.Add(m);
@@ -767,21 +851,23 @@ namespace WebAPP_LIULI.Controllers
 
             model.SaveChanges();
 
-            Order order = _m.Order;
-            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.Order.Id == order.Id).ToList();
+            MidSendOrder order = _m.MidSendOrder;
+            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.MidSendOrder.Id == order.Id).ToList();
             double count = 0;
             if (beforeSendOrders.Any())
             {
                 count = beforeSendOrders.Sum(p => p.SendCount);
             }
 
-            if (count < _m.Order.ProductCount)
-                _m.Order.OrderStatus = "部分发货";
+            order.ReceiveCount = count;
+
+            if (count < _m.MidSendOrder.SendCount)
+                _m.MidSendOrder.TaskStatus = "部分发货";
             else
-                _m.Order.OrderStatus = "全部发货";
+                _m.MidSendOrder.TaskStatus = "全部发货";
 
             model.SaveChanges();
-            return RedirectToAction("OrderList");
+            return RedirectToAction("MidSendOrderList");
         }
 
         public ActionResult SendOrderDriverList()
@@ -844,16 +930,21 @@ namespace WebAPP_LIULI.Controllers
 
             model.SaveChanges();
 
-            Order order = _m.Order;
-            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.Order.Id == order.Id).ToList();
+            MidSendOrder order = _m.MidSendOrder;
+            List<SendOrder> beforeSendOrders = model.SendOrder.Where(p => p.MidSendOrder.Id == order.Id).ToList();
             double count = 0;
             if(beforeSendOrders.Any())
             {
                 count = beforeSendOrders.Sum(p => p.ReceiveCount);
             }
-            _m.Order.DeliveryCount = count;
-            if(count >= order.ProductCount)
-                _m.Order.OrderStatus = "已完成";
+            _m.MidSendOrder.Order.DeliveryCount = count;
+            _m.MidSendOrder.ReceiveCount = count;
+
+            if (count > _m.MidSendOrder.SendCount)
+                _m.MidSendOrder.TaskStatus = "全部发货";
+
+            if (count >= order.Order.ProductCount)
+                _m.MidSendOrder.Order.OrderStatus = "已完成";
             
 
             model.SaveChanges();
@@ -1290,7 +1381,7 @@ namespace WebAPP_LIULI.Controllers
 
                 rs.ProductName = productName;
                 rs.OrderCount = temporders.Sum(p => p.ProductCount - p.DeliveryCount);
-                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.Order.ProductName == productName).Sum(p => p.SendCount);
+                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.MidSendOrder.Order.ProductName == productName).Sum(p => p.SendCount);
 
                 rsList.Add(rs);
             }
@@ -1452,7 +1543,7 @@ namespace WebAPP_LIULI.Controllers
 
                 rs.ProductName = productName;
                 rs.OrderCount = temporders.Sum(p => p.ProductCount - p.DeliveryCount);
-                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.Order.ProductName == productName).Sum(p => p.SendCount);
+                rs.RepositoryCount = allws.Where(p => p.ProductName == productName).Sum(p => p.WarehousingCount) - sendorders.Where(p => p.MidSendOrder.Order.ProductName == productName).Sum(p => p.SendCount);
 
                 rsList.Add(rs);
             }
@@ -1469,7 +1560,7 @@ namespace WebAPP_LIULI.Controllers
 
                 List<int> orderids = orders.Select(p => p.Id).ToList();
 
-                List<SendOrder> tempsend = sendOrders.Where(p => orderids.Contains(p.Order.Id)).ToList();
+                List<SendOrder> tempsend = sendOrders.Where(p => orderids.Contains(p.MidSendOrder.Order.Id)).ToList();
 
                 CustomerSpread cs = new CustomerSpread();
 

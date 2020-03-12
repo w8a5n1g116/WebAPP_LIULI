@@ -1,9 +1,9 @@
 ﻿@using WebAPP_LIULI.Models;
 @{
-    SendOrder m = Model;
+    MidSendOrder m = Model;
     if (m == null)
     {
-        m = new SendOrder();
+        m = new MidSendOrder();
     }
     User user = (User)Session["User"];
 }
@@ -22,7 +22,7 @@
 
     <div class="col-12">
         <div class="card-box">
-            <form id="FormBody" class="form-horizontal" role="form" action="/Home/SendOrder" method="post">
+            <form id="FormBody" class="form-horizontal" role="form" action="/Home/MidSendOrder" method="post">
                 <input hidden="hidden" type="text" name="Id" value="@m.Id">
 
                 @*<div class="form-group row">
@@ -39,20 +39,16 @@
 
                 <dl class="row">
                     <dt class="col-6">顾客名称</dt>
-                    <dd id="CustomerName" class="col-6">@m.MidSendOrder.Order.Customer.CustomerName</dd>
+                    <dd id="CustomerName" class="col-6">@m.Order.Customer.CustomerName</dd>
                     <dt class="col-6">公司识别号</dt>
-                    <dd id="CustomerAddress" class="col-6">@m.MidSendOrder.Order.Customer.CustomerCompanyNumber</dd>
+                    <dd id="CustomerAddress" class="col-6">@m.Order.Customer.CustomerCompanyNumber</dd>
                 </dl>
 
                 <dl class="row">
                     <dt class="col-6">产品名称</dt>
-                    <dd id="CustomerName" class="col-6">@m.MidSendOrder.Order.ProductName</dd>
+                    <dd id="CustomerName" class="col-6">@m.Order.ProductName</dd>
                     <dt class="col-6">订单数量</dt>
-                    <dd id="CustomerAddress" class="col-6">@m.MidSendOrder.Order.ProductCount</dd>
-                    <dt class="col-6">发货单数量</dt>
-                    <dd id="CustomerAddress" class="col-6">@m.MidSendOrder.SendCount</dd>
-                    <dt class="col-6">剩余发货数量</dt>
-                    <dd id="CustomerAddress" class="col-6">@(m.MidSendOrder.SendCount - m.MidSendOrder.ReceiveCount)</dd>
+                    <dd id="CustomerAddress" class="col-6">@m.Order.ProductCount</dd>
                 </dl>
 
                 <dl class="row">
@@ -63,19 +59,19 @@
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">发货地址</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="CustomerAddress" value="@if (string.IsNullOrEmpty(m.CustomerAddress)) {@m.MidSendOrder.Order.Customer.CustomerAddress } else {@m.CustomerAddress } ">
+                        <input class="form-control" type="text" name="CustomerAddress" value="@if (string.IsNullOrEmpty(m.CustomerAddress)) {@m.Order.Customer.CustomerAddress } else {@m.CustomerAddress } ">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">联系人</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="Contact" value="@if (string.IsNullOrEmpty(m.Contact)) {@m.MidSendOrder.Order.Customer.Contact } else {@m.Contact }">
+                        <input class="form-control" type="text" name="Contact" value="@if (string.IsNullOrEmpty(m.Contact)) {@m.Order.Customer.Contact } else {@m.Contact }">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">联系电话</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="ContactPhone" value="@if (string.IsNullOrEmpty(m.ContactPhone)) {@m.MidSendOrder.Order.Customer.ContactPhone } else {@m.ContactPhone } ">
+                        <input class="form-control" type="text" name="ContactPhone" value="@if (string.IsNullOrEmpty(m.ContactPhone)) {@m.Order.Customer.ContactPhone } else {@m.ContactPhone } ">
 
                     </div>
                 </div>
@@ -169,7 +165,7 @@
             })
 
             $('#SendCount').change(function () {
-                var orderCount = @m.MidSendOrder.SendCount;
+                var orderCount = @m.Order.ProductCount;
                 var sendCount = $("#SendCount").val();
                 var respository = $("Respository").val();
 
@@ -183,7 +179,7 @@
 
                 if (sendCount > orderCount) {
                     swal(
-                        '发货量超过发货单数量！',
+                        '发货量超过订单数量！',
                         '请核对发货量！',
                         'error'
                     )
