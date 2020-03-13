@@ -25,17 +25,17 @@
             <form id="FormBody" class="form-horizontal" role="form" action="/Home/SendOrder" method="post">
                 <input hidden="hidden" type="text" name="Id" value="@m.Id">
 
-                @*<div class="form-group row">
-            <label class="col-md-2 col-form-label">选择司机</label>
-            <div class="col-md-10">
-                <select id="Driver" class="form-control" name="MaterialDriver.Id">
-                    @foreach (var c in ViewBag.drivers)
-                    {
-                        <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
-                    }
-                </select>
-            </div>
-        </div>*@
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">选择司机</label>
+                    <div class="col-md-10">
+                        <select id="Driver" class="form-control" name="MaterialDriver.Id">
+                            @foreach (var c in ViewBag.drivers)
+                            {
+                                <option value="@c.Id" @if (m.MaterialDriver != null && c.Id == m.MaterialDriver.Id) { <text> selected</text> }>@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
 
                 <dl class="row">
                     <dt class="col-6">顾客名称</dt>
@@ -95,6 +95,13 @@
                     <label class="col-md-2 col-form-label">发货日期</label>
                     <div class="col-md-10">
                         <input class="form-control" type="date" name="SendTime" value="@m.SendTime">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">每吨运费</label>
+                    <div class="col-md-10">
+                        <input class="form-control" type="number" name="OneOfTonPrice" placeholder="元" value="">
                     </div>
                 </div>
 

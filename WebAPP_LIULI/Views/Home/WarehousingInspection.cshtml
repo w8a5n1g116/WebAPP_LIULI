@@ -23,28 +23,40 @@
     <div class="col-12">
         <div class="card-box">
             <form id="FormBody" class="form-horizontal" role="form" >
-                <table class="table">
-                    <thead>
-                        <tr>
-                            @*<th></th>*@
-                            <th width="30%">产品名称</th>
-                            <th width="40%">交检数量</th>
-                            <th width="30%">吨数</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var c in ViewBag.products)
-                        {
+                <div class="table-responsive">
+                    <table class="table text-nowrap">
+                        <thead>
                             <tr>
-                                @*<th scope="row">@(ViewBag.products.IndexOf(c)+1)</th>*@
-                                <td>@c.ProductName<input hidden="hidden" name="ProductName" value="@c.ProductName"></td>
-                                <td><input class="form-control" type="number" name="InspectionCount" placeholder="袋"><input hidden="hidden" type="text" name="InspectionUserName" value="@if (string.IsNullOrEmpty(m.InspectionUserName)) {@user.UserName  } else { @m.InspectionUserName; }"></td>
-                                <td>0吨</td>
+                                @*<th></th>*@
+                                <th width="25%">产品名称</th>
+                                <th width="30%">交检数量</th>
+                                <th width="15%">吨数</th>
+                                <th width="30%">顾客</th>
                             </tr>
-                        }
+                        </thead>
+                        <tbody>
+                            @foreach (var c in ViewBag.products)
+                            {
+                                <tr>
+                                    @*<th scope="row">@(ViewBag.products.IndexOf(c)+1)</th>*@
+                                    <td>@c.ProductName<input hidden="hidden" name="ProductName" value="@c.ProductName"></td>
+                                    <td><input class="form-control" type="number" name="InspectionCount" placeholder="袋"><input hidden="hidden" type="text" name="InspectionUserName" value="@if (string.IsNullOrEmpty(m.InspectionUserName)) {@user.UserName  } else { @m.InspectionUserName; }"></td>
+                                    <td>0吨</td>
+                                    <td>
+                                        <select class="form-control" name="CustomerShortName">
+                                            @foreach (var cu in ViewBag.customers)
+                                            {
+                                                <option value="@cu.CustomerShortName">@cu.CustomerShortName</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                
 
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">备注</label>
@@ -84,12 +96,14 @@
                         var ProductName = $($(val).find('input[name="ProductName"]')[0]).val();
                         var InspectionCount = $($(val).find('input[name="InspectionCount"]')[0]).val();
                         var InspectionUserName = $($(val).find('input[name="InspectionUserName"]')[0]).val();
+                        var CustomerShortName = $($(val).find('select[name="CustomerShortName"]')[0]).val();
                         
                         var postdata =
                         {
                             ProductName: ProductName,
                             InspectionCount: InspectionCount,
                             InspectionUserName: InspectionUserName,
+                            CustomerShortName:CustomerShortName,
                             Remarks:Remarks
                         };
 

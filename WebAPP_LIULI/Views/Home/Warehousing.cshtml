@@ -27,7 +27,7 @@
                 <div class="form-group row">
                     <label class="col-md-2 col-form-label">选择班组</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="WarehousingTeam" value="@user.UserTeam" disabled>
+                        <input class="form-control" type="text" name="WarehousingTeam" value="@if (m.Any()) {@m.FirstOrDefault().WarehousingTeam} " disabled>
                     </div>
                 </div>
 

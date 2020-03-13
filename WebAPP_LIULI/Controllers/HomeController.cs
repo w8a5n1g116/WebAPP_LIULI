@@ -188,6 +188,10 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult WarehousingInspection()
         {
+            List<Customer> customers = model.Customer.ToList();
+
+            ViewBag.customers = customers;
+
             List<Product> products = model.Product.ToList();
             ViewBag.products = products;
             return View();
@@ -197,11 +201,14 @@ namespace WebAPP_LIULI.Controllers
         [HttpPost]
         public string WarehousingInspection(List<Warehousing> warehousings)
         {
+
             var CreateTime = DateTime.Now;
             foreach (var w in warehousings)
             {
                 w.CreateTime = CreateTime;
                 w.InspectionTime = CreateTime;
+                string team = model.User.Where(p => p.UserName == w.InspectionUserName).First().UserTeam;
+                w.WarehousingTeam = team;//w.WarehousingTeam;
                 if (w.InspectionCount != 0)
                     model.Warehousing.Add(w);
             }
@@ -211,9 +218,6 @@ namespace WebAPP_LIULI.Controllers
 
         public ActionResult Warehousing(int id)
         {
-            List<Customer> customers = model.Customer.ToList();
-
-            ViewBag.customers = customers;
 
             List<string> teams = model.User.Select(p => p.UserTeam).Distinct().ToList();
             ViewBag.teams = teams;
@@ -241,8 +245,8 @@ namespace WebAPP_LIULI.Controllers
                 var _w = model.Warehousing.Where(p => p.Id == w.Id).First();
                 _w.WarehousingCount = w.WarehousingCount;
                 _w.WarehousingName = w.WarehousingName;
-                string team = model.User.Where(p => p.UserName == _w.InspectionUserName).First().UserTeam;
-                _w.WarehousingTeam = team;//w.WarehousingTeam;
+                //string team = model.User.Where(p => p.UserName == _w.InspectionUserName).First().UserTeam;
+                //_w.WarehousingTeam = team;//w.WarehousingTeam;
                 _w.WarehousingTime = WarehousingTime;
                 _w.CustomerShortName = w.CustomerShortName;
                 _w.Remarks = w.Remarks;
@@ -820,6 +824,9 @@ namespace WebAPP_LIULI.Controllers
 
             ViewBag.Respository = Respository;
 
+            List<Driver> drivers = model.MaterialDriver.Where(p => p.Status == 1).ToList();
+            ViewBag.drivers = drivers;
+
             SendOrder m = null;//model.SendOrder.Where(p => p.Order.Id == id && p.TaskStatus != "已收货").FirstOrDefault();
             if (m == null)
             {
@@ -840,7 +847,7 @@ namespace WebAPP_LIULI.Controllers
         {
             SendOrder _m = model.SendOrder.Where(p => p.Id == m.Id).FirstOrDefault();
 
-            _m.TaskStatus = "准备发货";
+            //_m.TaskStatus = "准备发货";
             _m.SendCount = m.SendCount;
             _m.SendTime = m.SendTime; ;
             _m.SendDeterminePerson = m.SendDeterminePerson;
@@ -848,6 +855,13 @@ namespace WebAPP_LIULI.Controllers
             _m.Contact = m.Contact;
             _m.ContactPhone = m.ContactPhone;
             _m.Remarks = m.Remarks;
+
+            _m.TaskStatus = "已发货";
+
+            _m.OneOfTonPrice = m.OneOfTonPrice;
+
+            Driver driver = model.MaterialDriver.Where(p => p.Id == m.MaterialDriver.Id).First();
+            _m.MaterialDriver = driver;
 
             model.SaveChanges();
 
