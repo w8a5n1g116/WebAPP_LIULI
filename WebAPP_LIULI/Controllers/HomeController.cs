@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            //Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)

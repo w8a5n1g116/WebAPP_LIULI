@@ -52,8 +52,8 @@
                         @foreach (var m in modelList)
                         {
                         <tr>
-                            <td>@m.Order.Customer.CustomerShortName</td>
-                            <td>@m.Order.ProductName</td>
+                            <td>@m.MidSendOrder.Order.Customer.CustomerShortName</td>
+                            <td>@m.MidSendOrder.Order.ProductName</td>
                             <td>@m.SendCount 吨</td>
                             <td>@m.SendTime.Value.ToString("yy/MM/dd")</td>
                             <td>@m.ReceiveCount 吨</td>
