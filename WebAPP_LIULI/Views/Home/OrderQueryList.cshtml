@@ -14,6 +14,23 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-12">
+        <div class="form-group form-inline">
+            <label class="col-3 col-form-label">顾客信息</label>
+            <div class="col-6">
+                <select class="form-control" name="customer" id="customer">
+                    <option></option>
+                    @foreach (var cu in ViewBag.customers)
+                    {
+                        <option value="@cu.CustomerShortName">@cu.CustomerShortName</option>
+                    }
+                </select>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-12">
@@ -84,7 +101,8 @@
             $('#queryButton').click(function () {
                 var starttime = $('#DeliveryStartTime').val();
                 var endtime = $('#DeliveryEndTime').val();
-                window.location = '/Home/OrderQueryList?starttime=' + starttime + '&endtime=' + endtime;
+                var customer = $('#customer').val();
+                window.location = '/Home/OrderQueryList?starttime=' + starttime + '&endtime=' + endtime + '&customer=' + customer;
             })
         });
     </script>

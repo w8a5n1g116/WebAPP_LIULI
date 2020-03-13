@@ -21,7 +21,7 @@ namespace WebAPP_LIULI.Controllers
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
             var actionName = filterContext.ActionDescriptor.ActionName;
 
-            Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
+            //Session["User"] = model.User.Where(p => p.UserName == "刘立").First();
 
             var user = Session["User"] as User;
             if (controllerName != "Home" && actionName != "Index" && user == null)
@@ -454,18 +454,31 @@ namespace WebAPP_LIULI.Controllers
             return View();
         }
 
-        public ActionResult OrderList(DateTime? starttime ,DateTime? endtime)
+        public ActionResult OrderList(DateTime? starttime ,DateTime? endtime, string customer)
         {
+            User user = (User)Session["User"];
+
             List<Order> mList = new List<Order>();
+
             if (starttime == null && endtime == null)
-                mList = model.Order.Where(p => p.OrderStatus != "已完成" ||  p.OrderStatus != "已关闭").OrderByDescending(p => p.OrderStatus).ToList();
+                mList = model.Order.Where(p => p.OrderStatus != "已完成" || p.OrderStatus != "已关闭").OrderByDescending(p => p.OrderStatus).ToList();
             else
                 mList = model.Order.Where(p =>
                 (p.DeliveryTime >= starttime.Value && p.DeliveryTime <= endtime.Value) &&
-                (p.OrderStatus != "已完成" || 
+                (p.OrderStatus != "已完成" ||
                 p.OrderStatus != "已关闭")
                 ).OrderByDescending(p => p.OrderStatus).ToList();
 
+            if (!string.IsNullOrEmpty(customer))
+            {
+                mList = mList.Where(p => p.Customer.CustomerName.Contains(customer) || p.Customer.CustomerShortName.Contains(customer)).ToList();
+            }
+
+            if (user.UserPermission != "管理员")
+            {
+                mList = mList.Where(p => p.Salesman == user.UserName).ToList();
+            }
+            
             return View(mList);
         }
 
@@ -477,8 +490,12 @@ namespace WebAPP_LIULI.Controllers
 
             return View(mList);
         }
-        public ActionResult OrderQueryList(DateTime? starttime, DateTime? endtime)
+        public ActionResult OrderQueryList(DateTime? starttime, DateTime? endtime,string customer)
         {
+            List<Customer> customers = model.Customer.ToList();
+
+            ViewBag.customers = customers;
+
             List<Order> mList = new List<Order>();
             if (starttime == null && endtime == null)
                 mList = model.Order.Where(p => p.OrderStatus == "已完成").OrderByDescending(p => p.OrderStatus).ToList();
@@ -487,6 +504,11 @@ namespace WebAPP_LIULI.Controllers
                 (p.DeliveryTime >= starttime.Value && p.DeliveryTime <= endtime.Value) &&
                 (p.OrderStatus == "已完成")
                 ).OrderByDescending(p => p.OrderStatus).ToList();
+
+            if(!string.IsNullOrEmpty(customer))
+            {
+                mList = mList.Where(p => p.Customer.CustomerName.Contains(customer) || p.Customer.CustomerShortName.Contains(customer)).ToList();
+            }
 
             return View(mList);
         }
